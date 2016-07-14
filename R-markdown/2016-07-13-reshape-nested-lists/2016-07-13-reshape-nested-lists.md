@@ -12,3 +12,8 @@ tan(pi / 4)
 ```
 ## [1] 1
 ```
+
+* flower part: sepal or petal
+* quantity: length or width
+* species: setosa, versicolor, virginica
+* data transformation
