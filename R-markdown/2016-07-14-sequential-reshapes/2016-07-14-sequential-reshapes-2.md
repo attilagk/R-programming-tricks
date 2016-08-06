@@ -8,7 +8,7 @@
 
 ## Performing sequential reshapes
 
-The prerequisite of our goal (the trellis plot of our extended version of *Iris* data) is to reshape the data into the completely long format either taking the *F.D* or the *D.F* sequence of two reshapes. The next two code blocks represent the *F.D* sequence.  The first reshape is according to *floral part* and the result is assigned to `iris.F`.
+The prerequisite of our goal (the trellis plot of our extended version of the *Iris* data) is to reshape the data into the completely long format either taking the *F.D* or the *D.F* sequence of two reshapes. The next two code blocks represent the *F.D* sequence.  The first reshape is according to *floral part* and the result is assigned to `iris.F`.
 
 
 ```r
@@ -200,31 +200,6 @@ iris.wide <-
             v.names = c("Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width"),
             timevar = "Species", times = c("setosa", "versicolor", "virginica"),
             idvar = "id")
-str(iris.wide)
-```
-
-```
-## 'data.frame':	50 obs. of  14 variables:
-##  $ X                      : num  5.65 4.62 6.48 4.79 6.14 ...
-##  $ id                     : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ Setosa.Sepal.Length    : num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
-##  $ Setosa.Sepal.Width     : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
-##  $ Setosa.Petal.Length    : num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
-##  $ Setosa.Petal.Width     : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
-##  $ Versicolor.Sepal.Length: num  7 6.4 6.9 5.5 6.5 5.7 6.3 4.9 6.6 5.2 ...
-##  $ Versicolor.Sepal.Width : num  3.2 3.2 3.1 2.3 2.8 2.8 3.3 2.4 2.9 2.7 ...
-##  $ Versicolor.Petal.Length: num  4.7 4.5 4.9 4 4.6 4.5 4.7 3.3 4.6 3.9 ...
-##  $ Versicolor.Petal.Width : num  1.4 1.5 1.5 1.3 1.5 1.3 1.6 1 1.3 1.4 ...
-##  $ Virginica.Sepal.Length : num  6.3 5.8 7.1 6.3 6.5 7.6 4.9 7.3 6.7 7.2 ...
-##  $ Virginica.Sepal.Width  : num  3.3 2.7 3 2.9 3 3 2.5 2.9 2.5 3.6 ...
-##  $ Virginica.Petal.Length : num  6 5.1 5.9 5.6 5.8 6.6 4.5 6.3 5.8 6.1 ...
-##  $ Virginica.Petal.Width  : num  2.5 1.9 2.1 1.8 2.2 2.1 1.7 1.8 1.8 2.5 ...
-##  - attr(*, "reshapeWide")=List of 5
-##   ..$ v.names: chr  "Sepal.Length" "Sepal.Width" "Petal.Length" "Petal.Width"
-##   ..$ timevar: chr "Species"
-##   ..$ idvar  : chr "id"
-##   ..$ times  : Factor w/ 3 levels "setosa","versicolor",..: 1 2 3
-##   ..$ varying: chr [1:4, 1:3] "Setosa.Sepal.Length" "Setosa.Sepal.Width" "Setosa.Petal.Length" "Setosa.Petal.Width" ...
 ```
 
 The structure of the new data format looks as expected
@@ -272,7 +247,7 @@ iris.2 <-
 
 ### Checking consistency between `iris` and `iris.2`
 
-`iris` and `iris.2` do differ in their attributes, the order of their components, and in the fact that `Species` is a factor in `iris` but a character vector in `iris.2`:
+In fact, `iris` and `iris.2` differ in their attributes, the order of their components, and in the fact that `Species` is a factor in `iris` but a character vector in `iris.2`:
 
 ```r
 str(iris)
@@ -313,7 +288,7 @@ str(iris.2)
 ##   ..$ timevar: chr "Species"
 ```
 
-But do they differ in a "meaningful" way?  Reordering `iris.2` and converting its `Species` component into factor shows
+But do they differ in any meaningful way?  Reordering `iris.2` and converting its `Species` component into factor shows
 
 ```r
 iris.2$Species <- as.factor(iris.2$Species)
@@ -324,22 +299,25 @@ all.equal(iris, iris.2[names(iris)])
 ## [1] "Attributes: < Component \"row.names\": Modes: numeric, character >"              
 ## [2] "Attributes: < Component \"row.names\": target is numeric, current is character >"
 ```
-Thus, the answer is: `iris.2` does not have any meaningful differences from `iris`, demonstrating the reversibility of reshape operations with the `reshape` function.
+Thus, the answer is: `iris.2` does not have any meaningful differences from `iris`, demonstrating the reversibility of reshape operations with the `reshape` function.  This means that we can perform a sequence of three reshapes from `iris.wide` and reach essentially the same `iris.F.D` or `iris.D.F` as we did with two reshapes from `iris`.
 
 ### The semantics and syntax of `reshape` and its `varying` argument
 
-Now that our data are in a completely wide format, a sequence of $k$ reshapes must be used to reach the (completely) long format.  Clearly, the sequence of reshapes follows a chosen sequence of factors $a_1,...,a_k$.
+When our data are in a completely wide format, a sequence of $k$ reshapes must be used to reach the (completely) long format.  Clearly, the sequence of reshapes follows a chosen sequence of factors $a_1,...,a_k$.
 
-First we want to reshape according to factor $a_1$ (equivalently index set $\mathcal{V}_{a_1}$.  With what arguments should we call `reshape`?  In particular what should be the value of the `varying` argument?  Some experimentation shows that `varying` must be a list of character vectors each of length $p_{a_1}$
+First we want to reshape according to factor $a_1$ (equivalently index set $\mathcal{V}_{a_1}$.  With what arguments should we call `reshape`?  In particular what should be the value of the `varying` argument?  The above examples show that `varying` must be a list of character vectors each of length $p_{a_1}$ (see e.g. `varying.v` in the previous section).
 
+This is because all $p_{a_1}$ levels of factor $a_1$ must appear in each vector.  The number of such vectors---the length of the list itself---is $p / p_{a_1} = \prod_{i=2}^k p_{a_i}$ because we need to consider all combinations of the *remaining* $k-1$ factors.  In case of `varying.v` $a_1 = \mathrm{sp}$ and $p_{a_1}=3$ corresponding to $\{\mathrm{setosa},\mathrm{versicolor},\mathrm{virginica}\}$, this is why each component of the list `varying.v` is a vector of length $3$.  On the other hand, $a_2 = \mathrm{fp}$ and $a_3 = \mathrm{dir}$ so $p / p_{a_1} = p_{a_2} p_{a_3} = 4$ because each of *floral part* and *direction* has $2$ levels, and this is why the length of `varying.v` itself is $4$.
 
-This is because all $p_{a_1}$ levels of factor $a_1$ must appear in each vector.  The number of such vectors---the length of the list itself---is $p / p_{a_1} = \prod_{i=2}^k p_{a_i}$ because we need to consider all combinations of the *remaining* $k-1$ factors.  In the second reshape $a_1$ plays no more role so it is omitted from `varying`.  Now the list has $p / (p_{a_1} p_{a_2}) = \prod_{i=3}^k p_{a_i}$ vector components and each vector is $p_{a_2}$ long.  The sequence continues with $i=3,...,k$.
+In the second reshape $a_1$ plays no more role so it is omitted from `varying`.  Now the list has $p / (p_{a_1} p_{a_2}) = \prod_{i=3}^k p_{a_i}$ vector components and each vector is $p_{a_2}$ long.  The sequence continues with $i=3,...,k$.
 
-If we follow this rule then the last, $k$-th, reshape is special in the sense that `varying` is a list with a single component, a $p_{a_k}$-length vector since there are no more factors to combine.  Therefore this trivial list may be `unlist`ed: replaced by its only component (the $p_{a_k}$-length vector) without any loss of information.  In fact, this is probably by far the most frequent way in which `reshape` is called since it was designed for longitudinal experiments where with only $k=1$ "factor" present: time.
+If we follow this rule then the last, $k$-th, reshape is special in the sense that no more factors remain and hence we arrive at the nonsense product $\prod_{i=k+1}^k p_{a_i}$ (nonsense since it has zero terms).  Then `varying` is a list with a single component, a $p_{a_k}$-length vector.  Such a trivial list may be `unlist`ed: replaced by its only component (the $p_{a_k}$-length vector) without any loss of information.  Notice how we could write `varying = c("Length", "Width")` instead of (the also correct) `varying = list("Length", "Width")` when we reshaped `iris.F` into `iris.F.D`!
+
+In fact, this "final" reshape is probably by far the most frequent way in which `reshape` is called since it was designed for longitudinal experiments where with only $k=1$ "factor" present: time.
 
 ## The lessons learned
 
-The multiplicity of data representations is not only computationally convenient but also facilitates the clarification and expression of certain semantic relationships between variables.  Unlike `stack` the `reshape` function allows representation of various experimental setups by partitioning variables into related sets and indexing those separately.  We only briefly mentioned how longitudinal setups can be modeled with `reshape` and how this can be generalized to cases where instead of time points genes or other objects serve as indices to a set of related variables. `reshape`'s documentation provides details and examples on---possibly generalized---longitudinal applications.
+The multiplicity of data representations is not only computationally convenient but also facilitates the clarification and expression of certain semantic relationships between variables.  Unlike `stack` the `reshape` function allows representation of various experimental design by partitioning variables into related sets and indexing those separately.  We only briefly mentioned how longitudinal experiments can be modeled with `reshape` and how this can be generalized to cases where instead of time points genes or other objects serve as indices to a set of related variables. `reshape`'s documentation provides details and examples on---mostly non-generalized---longitudinal applications.
 
 In contrast, we examined more deeply how `reshape` is also capable of dealing with the equally important but more complex case of factorial experiments, where $k$ number of combined index sets correspond to $k$ crossed factors.  In the *Iris* data set the factors are *species*, *floral part*, and measurement *direction* so $k=3$.  Moreover, we supplemented `iris` with a covariate $X$ with the intention of $X$ having a relation to the original variables akin to time-invariant variables relate time-varying ones in longitudinal studies in a sense that data reshaping is only governed by the latter.  This demonstrated how flexibly `reshape` can be adapted to various setups.
 

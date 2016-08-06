@@ -1,0 +1,14 @@
+plotting confidence intervals: alternative implementatinons
+
+applying nonstandard evaluation in sampling from randomly selected
+distributions (Davison)
+
+tree structures and tree-recursive functions
+Example: turn this R expression into tree-recursive!
+Betas <- lapply(M, function(l3m) {
+    df <- do.call(make.groups,
+                  lapply(l3m,
+                         function(l2m)
+                             do.call(make.groups,
+                                     lapply(l2m,
+                                            get.estimate.CI, conf.lev = 0.99))))
