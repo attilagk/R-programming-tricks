@@ -6,10 +6,10 @@
 # 'jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-title: R programming tricks
+title: R you experienced?
 email: attila.gulyas.kovacs@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-    Sometimes it's worth to stall while working with R and contemplate on emerging programming concepts rather than applications.
+    A blog on programming techniques and statistical modeling using the R language
 baseurl: "/R-you-experienced" # the subpath of your site, e.g. /blog
 url: "https://attilagk.github.io" # the base hostname & protocol for your site
 twitter_username: jekyllrb
