@@ -4,4 +4,4 @@ title: Intro
 permalink: /intro/
 ---
 
-Sometimes it's worth to stall while working with R and contemplate on emerging programming concepts rather than applications.
+This blog is motivated by my own use of R in applied biostatistical research.  Typically the true challenge---to me---is to clarify programming concepts and how R represents statistical entities.
