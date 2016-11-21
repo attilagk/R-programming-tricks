@@ -131,7 +131,7 @@ The second limitation is the lack of modularity that follows from the fact that 
 
 The second limitation might be overcome by somehow passing the list of "alternatives", say `ld`, to the main sampling function that would then call `switch` with `ld` as arguments.  But that strategy would have to be involve `do.call` as well as the prepending of `ld` with an index that selects a single element from it.  But the first limitation can be overcome in a straight-forward way only by using `substitute`.
 
-So, the teacher implements `sample.d.substitute`.  The `x` and `p` arguments have the same semantics as in the case of `sample.d.switch`.   The new argument is `ld`, the unnamed list of named lists.  As the code shows, the `switch` in the body of the `helper` function was replaced by expressions that involve two calls to `substitute` within the same expression.  This mechanism allows sequential evaluation in two steps: at the first step a call object is obtained and assigned to `cl`, while at the second step `cl` itself is evaluated to produce the `sample`.
+So, the teacher implements `sample.d.substitute`.  The `x` and `p` arguments have the same semantics as in the case of `sample.d.switch`.   The new argument is `ld`, the unnamed list of named lists.  
 
 
 ```r
@@ -177,4 +177,100 @@ plot.ls(s = s, guess = FALSE, call2strip = TRUE, main = "Six distributions")
 
 ![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
 
-As can be seen, the new implementation removed the limitations, and thus `sample.d.substitute` is superior to `sample.d.switch`.
+The teacher likes `sample.d.substitute` so much that she/he starts exercising with it.
+
+
+```r
+set.seed(13) # challenging superstition
+s <- sample.d.substitute(sample(seq_along(l.distr), 10, replace = TRUE), ld = l.distr)
+ans <- plot.ls(s = s, guess = TRUE, layout = c(5, 2))
+```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+
+Checking answers:
+
+
+```r
+ans
+```
+
+```
+##  [1] "beta"              "t"                 "gamma"            
+##  [4] "normal"            "normal.cauchy.mix" "normal"           
+##  [7] "rounded.normal"    "beta"              "normal.cauchy.mix"
+## [10] "normal"
+```
+
+## Why substitution works better
+
+Clearly, the new implementation based on `sample.d.substitute` and a separate input list overcame the limitations of `sample.d.substitute`.  What made that possible?
+
+Comparing the code for `sample.d.substitute` with that of `sample.d.switch` shows, that the main change was the replacement of the `switch` expression by several expressions that involve two calls to `substitute` and two calls to `eval`.  Let's look at the most relevant part of the code of `sample.d.substitute`!
+
+
+```r
+1   sample.d.substitute <- function(x = 1:4, ld, p = param) {
+2       ....
+3           le <- list(e = ld[[x[i]]])
+4           cl <- eval(substitute(substitute(e, p), le))
+5           ....
+6                call = deparse(cl),
+7                sample = eval(cl),
+                 ....
+        ....
+```
+
+Note that argument `ld` in line 1 is a list of `quote`d (that is: unevaluated) expressions like `rnorm(n = n)`.  In line 3 a single expression is selected from `ld` using the index `x[i]` and that expression is named `e` within the named list `le`.  So, if `x[i]` takes the value of `1` then `e` is `rnorm(n = n)` while if `x[i]` is, say, `6` then `e` is `c(rnorm(n = n - m), rcauchy(n = m))`.
+
+Line 4 `eval`uates `substitute(substitute(e, p), le)` in multiple steps.  First, the outer `substitute` replaces `e` by the value of `le$e`, which is the unevaluated expression `c(rnorm(n = n - m), rcauchy(n = m))` if we select the 6th element of `l.distr`.  We assign the value of the first substitute to `s1` so that we can print it:
+
+
+```r
+# p and le in the workspace instead of the body of sample.d.substitute 
+p <- list(n = 77, m = 4)
+le <- list(e = l.distr[[6]])
+(s1 <- substitute(substitute(e, p), le))
+```
+
+```
+## substitute(c(rnorm(n = n - m), rcauchy(n = m)), p)
+```
+
+Now the second substitution takes place that replaces the *second* `n` in the argument list of `rnorm` with the value of `n` in the named list `list(n = 77, m = 4)`, which is `77`.  It does *not* replace the first `n` symbol in `rnorm` neither the only `n` symbol in `rcauchy` because both of those instances of the `n` symbol stand for the *name* of these functions' sample size argument (in scheme they are called formal parameters).  Such complication does not arise with `m` because that symbol identifies no argument name in `rnorm` or `rcauchy`, so both instances of `m` are replaced with `4`.  But the second substitution cannot occur without `eval` because `substitute(c(rnorm(n = n - m), rcauchy(n = m)), p)`, the value of `s1`, is an unevaluated expression just like `rnorm(n = n)` and the others in `l.distr`.  In this sense it does not matter that the value of `s1` happens to contain the symbol `substitute` while `rnorm(n = n)` does not; both expressions are unevaluated until passed to `eval`.  When this happens to `s1`, only then does it gain significance that `s1` names an expression that begins with `substitute`.  Evaluation of such expression results in a new unevaluated expression with all the replacements,  concerning symbols in `p`, having taken place.
+
+
+```r
+(cl <- eval(s1))
+```
+
+```
+## c(rnorm(n = 77 - 4), rcauchy(n = 4))
+```
+
+This expression is specific both to the index of `l.distr`, in this case `6`, and to the value of `p`, in this case `list(n = 77, m = 4)`.  The two substitutions were necessary to *isolate* the specification of the family of the distribution from the specification of its parameters.
+
+Now we can do two things with the unevaluated expression `cl`, which is formally a call object.  First, as in line 6 above, we can `deparse` it into a character vector to use it in various figure labels.
+
+
+```r
+deparse(cl)
+```
+
+```
+## [1] "c(rnorm(n = 77 - 4), rcauchy(n = 4))"
+```
+
+Second, as in line 7 above, we can evaluate it to generate the statistical sample, implemented as a numeric vector. 
+
+
+```r
+str(eval(cl))
+```
+
+```
+##  num [1:77] -0.621 -0.214 -0.506 0.93 -0.913 ...
+```
+
+`cl` is used in both ways in `sample.d.substitute` and that is one of the reasons why that function is superior to `sample.d.switch`.  The other reason is the modularity enabled by the passing of unevaluated expressions (e.g. `rnorm(n = n)`) to 
+`sample.d.substitute`.   The cost of this implementation is having to deal with the non-standard way of evaluation, which is more difficult to analyze and debug for most programmers who are already well accustomed to the standard evaluation in R.
