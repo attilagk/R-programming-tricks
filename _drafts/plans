@@ -1,9 +1,6 @@
 plotting confidence intervals: alternative implementatinons (my.segplot,
 my.segplot2 in 2016-07-08-conditional-inference
 
-applying nonstandard evaluation in sampling from randomly selected
-distributions (Davison)
-
 tree structures and tree-recursive functions
 Example: turn this R expression into tree-recursive!
 Betas <- lapply(M, function(l3m) {
