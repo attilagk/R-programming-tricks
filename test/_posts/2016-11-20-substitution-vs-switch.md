@@ -1,3 +1,30 @@
+---
+layout: post
+title: "Substitution vs Switch"
+---
+
+## Summary
+
+1. general task: evaluate arbitrary elements of a sequence of expressions
+1. specific task: produce normal Q--Q plots for a sequence of distributions
+1. two implementation strategies are discussed: one based on `switch` and another on `substitute`
+1. using `substitute` demands more abstract programming but affords more flexibility
+
+## A toy problem: recognizing distributions
+
+This exercise appeared in the practicals for chapter 2 of A.C. Davison's Statistical Models (Cambridge University Press, 2003).
+
+Suppose we want to compare a sequence of distributions to the standard normal distribution.  We base the comparison on random samples from the distributions, which we visualize with normal quantile-quantile (Q--Q) plots.  For instance, consider the Q--Q plots in the figure titled "Four distributions" below.
+
+To put a twist on this toy problem the sequence $$x$$ of distributions may contain repeated elements, such as $$x = \{\mathrm{gamma}(p), \mathrm{normal}(\mu = 0, \sigma^2 = 1), \mathrm{gamma}(p), \mathrm{gamma}(p)\}$$, where $$p$$ is a vector of parameters for the gamma distribution family.  This might be useful if we want to create the following quiz:
+
+1. *teacher*: generates a sample from each distribution in the sequence $$x$$ with possibly repeated distributions
+    * she/he will sample using either the `sample.d.switch` or the `sample.d.substitute` implementation
+1. *student*: creates Q--Q plots from the sequence of samples and guesses $$x$$, the sequence of distributions
+    * she/he will plot the samples using `plot.ls`
+
+To keep things simple, we will sample the same number of points $$n$$ from each distribution and for the parameters of all distributions will be based on a single number $$m$$ with the constraint that all distributions should be on comparable scale so that the principal difference is in the shape of the distributions.  We store $$n$$ and $$m$$ in the list `param`.
+
 
 
 
@@ -89,7 +116,7 @@ library(lattice)
 plot.ls(s = s, guess = FALSE, main = "Four distributions")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
+![plot of chunk unnamed-chunk-6]({{ site.baseurl }}/test/R/2016-11-20-substitution-vs-switch/figure/unnamed-chunk-6-1.png)
 
 The student notes that, relative to the standard normal distribution, the t distribution has heavier tails, the gamma distribution is not supported on negative numbers, and that the effect of rounding is a step-like pattern in the Q--Q plot.
 
@@ -108,7 +135,7 @@ library(lattice)
 ans <- plot.ls(s = s, guess = TRUE)
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-8]({{ site.baseurl }}/test/R/2016-11-20-substitution-vs-switch/figure/unnamed-chunk-8-1.png)
 
 Once she/he guessed the distributions, the correct answers are printed.
 
@@ -175,7 +202,7 @@ s <- sample.d.substitute(x = 1:6, ld = l.distr)
 plot.ls(s = s, guess = FALSE, call2strip = TRUE, main = "Six distributions")
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
+![plot of chunk unnamed-chunk-13]({{ site.baseurl }}/test/R/2016-11-20-substitution-vs-switch/figure/unnamed-chunk-13-1.png)
 
 The teacher likes `sample.d.substitute` so much that she/he starts exercising with it.
 
@@ -186,7 +213,7 @@ s <- sample.d.substitute(sample(seq_along(l.distr), 10, replace = TRUE), ld = l.
 ans <- plot.ls(s = s, guess = TRUE, layout = c(5, 2))
 ```
 
-![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+![plot of chunk unnamed-chunk-14]({{ site.baseurl }}/test/R/2016-11-20-substitution-vs-switch/figure/unnamed-chunk-14-1.png)
 
 Checking answers:
 
@@ -274,3 +301,5 @@ str(eval(cl))
 
 `cl` is used in both ways in `sample.d.substitute` and that is one of the reasons why that function is superior to `sample.d.switch`.  The other reason is the modularity enabled by the passing of unevaluated expressions (e.g. `rnorm(n = n)`) to 
 `sample.d.substitute`.   The cost of this implementation is having to deal with the non-standard way of evaluation, which is more difficult to analyze and debug for most programmers who are already well accustomed to the standard evaluation in R.
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
