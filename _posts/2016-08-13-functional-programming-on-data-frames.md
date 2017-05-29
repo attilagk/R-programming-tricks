@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Iteration: Loops vs Functional Programming"
+---
+
 ## Introduction
 
 Iterative processes are characterized by successive steps forming a sequence of states captured by **state variables**.  In each step the state variables are updated based on themselves and some rule.  Iteration is often implemented using control-flow constructs like the `for` or `while` **loop** (see `?Control` for help).
@@ -12,24 +17,24 @@ Here the same toy problem will be solved iteratively either with a `for` loop or
 
 ## The problem
 
-Suppose we want to turn the *input* vector $v$ into the *output* vector $w$ such that
+Suppose we want to turn the *input* vector $$v$$ into the *output* vector $$w$$ such that
 ```
 # this is not R code
 v = (T,F,F,T,T,F,F,F,F,F,F,F,T,F,F,F,T,T,T,T,T,F,F,F,F,T,F,F,T,T) # input
 w = (1,0,0,2,2,0,0,0,0,0,0,0,3,0,0,0,4,4,4,4,4,0,0,0,0,5,0,0,6,6) # desired output
 ```
 
-To generalize the problem, let the input vector $v$ be a (finite) sequence taking values on the binary set, say $\{\mathrm{true},\mathrm{false}\}$ whereas the output vector $w$ a sequence on integers with the following properties:
+To generalize the problem, let the input vector $$v$$ be a (finite) sequence taking values on the binary set, say $$\{\mathrm{true},\mathrm{false}\}$$ whereas the output vector $$w$$ a sequence on integers with the following properties:
 
-* $w$ is of the same length as $v$
-* $w_i=0$ if $v_i=\mathrm{false}$; otherwise $w_i>0$
-* for the $m$-th contiguous subsequence of $v$ such that $v_i=v_{i+1}=...=v_{i+k}=\mathrm{true}$ and $v_{i-1}=v_{i+k+1}=\mathrm{false}$, where $k\ge 1$, the corresponding subsequence of $w$ is $w_i=w_{i+1}=...=w_{i+k}=m$
+* $$w$$ is of the same length as $$v$$
+* $$w_i=0$$ if $$v_i=\mathrm{false}$$; otherwise $$w_i>0$$
+* for the $$m$$-th contiguous subsequence of $$v$$ such that $$v_i=v_{i+1}=...=v_{i+k}=\mathrm{true}$$ and $$v_{i-1}=v_{i+k+1}=\mathrm{false}$$, where $$k\ge 1$$, the corresponding subsequence of $$w$$ is $$w_i=w_{i+1}=...=w_{i+k}=m$$
 
-We will refer to such "all-true" subsequences of $v$ as $T$-**segments** and the "all-false" subsequences between them as $F$-**segments**.
+We will refer to such "all-true" subsequences of $$v$$ as $$T$$-**segments** and the "all-false" subsequences between them as $$F$$-**segments**.
 
 ### Motivating examples
 
-This problem often arises in conjunction with longitudinal data, where we observe a sequence $v_1,...,v_n$, where each $v_i$ is a binary class label.  For example, $i$ might indicate a nucleotide site within the coding region of a gene and $v_i$ whether that site is within an exon or an intron.  Then the goal would be to uniquely label the exons (but not the introns).  Another genetic example is when each $i$ is a gene and $v_i$ indicates whether $i$ is part of some imprinted gene cluster.  Then the goal would amount to uniquely label the clusters.
+This problem often arises in conjunction with longitudinal data, where we observe a sequence $$v_1,...,v_n$$, where each $$v_i$$ is a binary class label.  For example, $$i$$ might indicate a nucleotide site within the coding region of a gene and $$v_i$$ whether that site is within an exon or an intron.  Then the goal would be to uniquely label the exons (but not the introns).  Another genetic example is when each $$i$$ is a gene and $$v_i$$ indicates whether $$i$$ is part of some imprinted gene cluster.  Then the goal would amount to uniquely label the clusters.
 
 ### Data preparation
 
@@ -58,9 +63,9 @@ T.seg.loop <- function(v) {
 }
 ```
 
-The iterative strategy expressed by `T.seg.loop` is to visit each $v_i$ sequentially $i=1,...,n$ and compute $w_i$ given $v_i$ and the preceding $v_{i-1}$.  But besides $v_{i-1},v_i$ another piece of information is necessary: the number of $T$-segments occurring up to $i-1$ i.e in the subsequence $v_1,...,v_{i-1}$, which is the same as the value of $w_j$, where $j$ indicates the start of the last $T$-segment in $v_1,...,v_{i-1}$ referred to henceforth as *the latest* $T$-segment.
+The iterative strategy expressed by `T.seg.loop` is to visit each $$v_i$$ sequentially $$i=1,...,n$$ and compute $$w_i$$ given $$v_i$$ and the preceding $$v_{i-1}$$.  But besides $$v_{i-1},v_i$$ another piece of information is necessary: the number of $$T$$-segments occurring up to $$i-1$$ i.e in the subsequence $$v_1,...,v_{i-1}$$, which is the same as the value of $$w_j$$, where $$j$$ indicates the start of the last $$T$$-segment in $$v_1,...,v_{i-1}$$ referred to henceforth as *the latest* $$T$$-segment.
 
-Note that $j\lt i$ and $v_{i-1}$ may or may not be part of the latest $T$-segment.  In both cases $w_i=0$ if $v_i=\mathrm{false}$ otherwise $w_i$ differs between the two cases:  If $v_{i-1}$ is in the latest $T$-segment then so is $v_i$ and thus $w_i=w_j$; but if $v_{i-1}$ is in the latest $F$-segment then $v_i$ *begins* a new $T$-segment, therefore $w_i=w_j+1$.
+Note that $$j\lt i$$ and $$v_{i-1}$$ may or may not be part of the latest $$T$$-segment.  In both cases $$w_i=0$$ if $$v_i=\mathrm{false}$$ otherwise $$w_i$$ differs between the two cases:  If $$v_{i-1}$$ is in the latest $$T$$-segment then so is $$v_i$$ and thus $$w_i=w_j$$; but if $$v_{i-1}$$ is in the latest $$F$$-segment then $$v_i$$ *begins* a new $$T$$-segment, therefore $$w_i=w_j+1$$.
 
 As we see, the strategy works:
 
@@ -115,28 +120,28 @@ As a result of last two characteristics `T.seg.loop` is concise but "monolithic"
 
 ## Solution using the functional paradigm
 
-Instead of immediately presenting `T.seg.funprog`, the functional counterpart of `T.seg.loop`, in its complete form, I build it piece-by-piece, demonstrating modularity.  I begin by reformulating the problem for a reason to become clear shortly.  While the ultimately aim is $w=(1,0,0,2,0,0,...)$ it will be useful to first compute a vector $z=(1,-1,-1,2,-2,-2,...)$.  Under our toy example
+Instead of immediately presenting `T.seg.funprog`, the functional counterpart of `T.seg.loop`, in its complete form, I build it piece-by-piece, demonstrating modularity.  I begin by reformulating the problem for a reason to become clear shortly.  While the ultimately aim is $$w=(1,0,0,2,0,0,...)$$ it will be useful to first compute a vector $$z=(1,-1,-1,2,-2,-2,...)$$.  Under our toy example
 ```
 # this is not R code
 v = (T, F, F,T,T, F, F, F, F, F, F, F,T, F, F, F,T,T,T,T,T, F, F, F, F,T,F, F,T,T) # input
 z = (1,-1,-1,2,2,-2,-2,-2,-2,-2,-2,-2,3,-3,-3,-3,4,4,4,4,4,-4,-4,-4,-4,5,5,-5,6,6) # desired output
 ```
 
-Once $z$ is computed then it is easy to obtain the desired $w$ using the function
+Once $$z$$ is computed then it is easy to obtain the desired $$w$$ using the function
 
 ```r
 do.zero <- function(z)
     ifelse(z > 0, z, 0)
 ```
 
-$z$ crucially differs from $w$ in that not only each $T$-segment but also each $F$-segment has its unique label, a non-positive integer.  (Note that the label of the first $F$-segment would be zero both for $w$ and $z$ if $v$ didn't begin with a $T$.)  Therefore, in the $i$-th step of an iterative process $z_i$ can be updated solely from $z_{i-1}$ and $v_i$. In contrast updating of $w_i$ requires not only $w_{i-1}$ and $v_i$ but also an additional state variable; in the case of `T.seq.loop` this was the role of `w.j`.
+$$z$$ crucially differs from $$w$$ in that not only each $$T$$-segment but also each $$F$$-segment has its unique label, a non-positive integer.  (Note that the label of the first $$F$$-segment would be zero both for $$w$$ and $$z$$ if $$v$$ didn't begin with a $$T$$.)  Therefore, in the $$i$$-th step of an iterative process $$z_i$$ can be updated solely from $$z_{i-1}$$ and $$v_i$$. In contrast updating of $$w_i$$ requires not only $$w_{i-1}$$ and $$v_i$$ but also an additional state variable; in the case of `T.seq.loop` this was the role of `w.j`.
 
 Now we need the following:
 
-1. a procedure that updates $z_i$ given $z_{i-1}$ and $v_i$
+1. a procedure that updates $$z_i$$ given $$z_{i-1}$$ and $$v_i$$
 1. an accumulator using that procedure
 
-Before addressing the first point, it will be convenient to initialize the data frame that will hold $v$ and the desired $z$
+Before addressing the first point, it will be convenient to initialize the data frame that will hold $$v$$ and the desired $$z$$
 
 ```r
 df <- data.frame(v = v)
@@ -161,7 +166,7 @@ l.df[1:2]
 ## 2 FALSE 0
 ```
 
-The procedure updating $z_i$ is
+The procedure updating $$z_i$$ is
 
 ```r
 T.seg.binop <- function(A, B) {
@@ -179,9 +184,9 @@ T.seg.binop <- function(A, B) {
     rbind(A, B) # append B to the end of A
 }
 ```
-The name expresses that `T.seq.binop` is a binary operator taking two data frames `A` and `B` returns a single data frame third one by modifying `B` and appending that to `A`.  Less important is that $z_i$ is actually computed slightly more conveniently from $z_{i-1}$ and $v_i$ and $v_{i-1}$ than from only $z_{i-1}$ and $v_i$ because the latter would require checking if $z_{i-1}\lt 0$.
+The name expresses that `T.seq.binop` is a binary operator taking two data frames `A` and `B` returns a single data frame third one by modifying `B` and appending that to `A`.  Less important is that $$z_i$$ is actually computed slightly more conveniently from $$z_{i-1}$$ and $$v_i$$ and $$v_{i-1}$$ than from only $$z_{i-1}$$ and $$v_i$$ because the latter would require checking if $$z_{i-1}\lt 0$$.
 
-A suitable accumulator is already implemented in `base::Reduce`.  Now we are ready to compute $z$
+A suitable accumulator is already implemented in `base::Reduce`.  Now we are ready to compute $$z$$
 
 ```r
 df <- Reduce(T.seg.binop, l.df)
@@ -225,11 +230,11 @@ Yet, `T.seg.funprog` is rather different from `T.seg.loop` in that
 
 ## Conclusion
 
-In case of this toy problem the functional programming approach appears conceptually more pleasing due to its modularity.  On the other hand, it required longer code, multiple functions, the division of a single problem (finding $w$ given $v$) into two sub problems (finding $z$ given $v$ and $w$ given $z$), and restructuring the initial data frame `df` into the list `l.df`.
+In case of this toy problem the functional programming approach appears conceptually more pleasing due to its modularity.  On the other hand, it required longer code, multiple functions, the division of a single problem (finding $$w$$ given $$v$$) into two sub problems (finding $$z$$ given $$v$$ and $$w$$ given $$z$$), and restructuring the initial data frame `df` into the list `l.df`.
 
 ## Epilogue: What is accumulation?
 
-The accumulator `Reduce` in `T.seq.funprog` takes the generalized vector `l.df` and accumulates the value of `T.seg.binop` called in successive steps.  In the $i$-th step the `A` argument to `T.seg.binop` is the value of the same function at the $i-1$-th step and the `B` argument is the $i$-th component of `l.df`, that is `l.df[[i]]`.  In the final step `T.seg.binop(A, B)` evaluates to the desired data frame.
+The accumulator `Reduce` in `T.seq.funprog` takes the generalized vector `l.df` and accumulates the value of `T.seg.binop` called in successive steps.  In the $$i$$-th step the `A` argument to `T.seg.binop` is the value of the same function at the $$i-1$$-th step and the `B` argument is the $$i$$-th component of `l.df`, that is `l.df[[i]]`.  In the final step `T.seg.binop(A, B)` evaluates to the desired data frame.
 
 By default `Reduce` returns only that final result.  However, `Reduce` can can additionally return the successive intermediate results when called with the `accumulate = TRUE` argument.  The terminology might sound confusing but with the default `accumulate = FALSE` argument `Reduce` is still [considered][sicp] an accumulator.  Setting terminology aside, calling `Reduce` in `T.seg.funprog` with `accumulate = TRUE` evaluates to a list of data frames, each component showing the state of the iterative process at the corresponding step:
 
@@ -272,3 +277,5 @@ T.seg.funprog <- function(v, F.as.zero = TRUE, ...) {
 ```
 
 [sicp]: https://www.mitpress.mit.edu/sicp/full-text/book/book-Z-H-15.html#%_sec_2.2.3
+<!-- MathJax scripts -->
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
