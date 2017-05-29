@@ -1,0 +1,266 @@
+<h2>Introduction</h2>
+
+<p>Iterative processes are characterized by successive steps forming a sequence of states captured by <strong>state variables</strong>.  In each step the state variables are updated based on themselves and some rule.  Iteration is often implemented using control-flow constructs like the <code>for</code> or <code>while</code> <strong>loop</strong> (see <code>?Control</code> for help).</p>
+
+<p>The <strong>functional programming</strong> paradigm offers an alternative vocabulary for iteration&mdash;as well as for other types of processes&mdash;based on some possibly generic vector.  That vector, often a list, provides a <a href="https://www.mitpress.mit.edu/sicp/full-text/book/book-Z-H-15.html#%_sec_2.2.3">conventional interface</a> for certain higher order functions (see <code>?base::Reduce</code> for help).  These higher order functions all <em>enumerate</em> the components of the vector and apply to each component some other function which they receive as argument.  Depending on the return value of that function argument and the number of <em>its</em> arguments, such a higher order function may play a number of roles:</p>
+
+<ul>
+<li><em>filter</em>, e.g. <code>Filter</code>, where the function argument has logical value (predicate)</li>
+<li><em>map</em>, e.g. <code>Map</code> and <code>lapply</code>, where the function argument acts as a unary operator on single components of the vector</li>
+<li><em>accumulator</em>, e.g. <code>Reduce</code>, where the function argument acts as a <em>binary operator</em> on pairs of objects derived from the vector</li>
+</ul>
+
+<p>Here the same toy problem will be solved iteratively either with a <code>for</code> loop or with the accumulator <code>Reduce</code> to highlight shared features and differences between the two strategies.  The toy problem will also illustrate that <code>Reduce</code> can deal with generalized vectors&mdash;in the case a list of data frames.</p>
+
+<h2>The problem</h2>
+
+<p>Suppose we want to turn the <em>input</em> vector \(v\) into the <em>output</em> vector \(w\) such that</p>
+
+<pre><code># this is not R code
+v = (T,F,F,T,T,F,F,F,F,F,F,F,T,F,F,F,T,T,T,T,T,F,F,F,F,T,F,F,T,T) # input
+w = (1,0,0,2,2,0,0,0,0,0,0,0,3,0,0,0,4,4,4,4,4,0,0,0,0,5,0,0,6,6) # desired output
+</code></pre>
+
+<p>To generalize the problem, let the input vector \(v\) be a (finite) sequence taking values on the binary set, say \(\{\mathrm{true},\mathrm{false}\}\) whereas the output vector \(w\) a sequence on integers with the following properties:</p>
+
+<ul>
+<li>\(w\) is of the same length as \(v\)</li>
+<li>\(w_i=0\) if \(v_i=\mathrm{false}\); otherwise \(w_i>0\)</li>
+<li>for the \(m\)-th contiguous subsequence of \(v\) such that \(v_i=v_{i+1}=&hellip;=v_{i+k}=\mathrm{true}\) and \(v_{i-1}=v_{i+k+1}=\mathrm{false}\), where \(k\ge 1\), the corresponding subsequence of \(w\) is \(w_i=w_{i+1}=&hellip;=w_{i+k}=m\)</li>
+</ul>
+
+<p>We will refer to such &ldquo;all-true&rdquo; subsequences of \(v\) as \(T\)-<strong>segments</strong> and the &ldquo;all-false&rdquo; subsequences between them as \(F\)-<strong>segments</strong>.</p>
+
+<h3>Motivating examples</h3>
+
+<p>This problem often arises in conjunction with longitudinal data, where we observe a sequence \(v_1,&hellip;,v_n\), where each \(v_i\) is a binary class label.  For example, \(i\) might indicate a nucleotide site within the coding region of a gene and \(v_i\) whether that site is within an exon or an intron.  Then the goal would be to uniquely label the exons (but not the introns).  Another genetic example is when each \(i\) is a gene and \(v_i\) indicates whether \(i\) is part of some imprinted gene cluster.  Then the goal would amount to uniquely label the clusters.</p>
+
+<h3>Data preparation</h3>
+
+<pre><code class="r"># made up data
+v &lt;- c(T, F, F, T, T, F, F, F, F, F, F, F, T, F, F, F, T, T, T, T, T, F, F, F, F, T, F, F, T, T)
+</code></pre>
+
+<h2>Solution with a loop</h2>
+
+<p>Consider the function</p>
+
+<pre><code class="r">T.seg.loop &lt;- function(v) {
+    w &lt;- w.j &lt;- as.integer(v[1]) # initialize
+    for(i in seq(2, length(v))) {
+        if(! v[i]) w &lt;- c(w, 0)  # i is in an F-segment
+        else {                   # i is in a T-segment
+            if(! v[i - 1])       # i is at the start of a T-segment
+                w.j &lt;- w.j + 1
+            w &lt;- c(w, w.j)
+        }
+    }
+    return(data.frame(v = v, w = w))
+}
+</code></pre>
+
+<p>The iterative strategy expressed by <code>T.seg.loop</code> is to visit each \(v_i\) sequentially \(i=1,&hellip;,n\) and compute \(w_i\) given \(v_i\) and the preceding \(v_{i-1}\).  But besides \(v_{i-1},v_i\) another piece of information is necessary: the number of \(T\)-segments occurring up to \(i-1\) i.e in the subsequence \(v_1,&hellip;,v_{i-1}\), which is the same as the value of \(w_j\), where \(j\) indicates the start of the last \(T\)-segment in \(v_1,&hellip;,v_{i-1}\) referred to henceforth as <em>the latest</em> \(T\)-segment.</p>
+
+<p>Note that \(j\lt i\) and \(v_{i-1}\) may or may not be part of the latest \(T\)-segment.  In both cases \(w_i=0\) if \(v_i=\mathrm{false}\) otherwise \(w_i\) differs between the two cases:  If \(v_{i-1}\) is in the latest \(T\)-segment then so is \(v_i\) and thus \(w_i=w_j\); but if \(v_{i-1}\) is in the latest \(F\)-segment then \(v_i\) <em>begins</em> a new \(T\)-segment, therefore \(w_i=w_j+1\).</p>
+
+<p>As we see, the strategy works:</p>
+
+<pre><code class="r">T.seg.loop(v)
+</code></pre>
+
+<pre><code>##        v w
+## 1   TRUE 1
+## 2  FALSE 0
+## 3  FALSE 0
+## 4   TRUE 2
+## 5   TRUE 2
+## 6  FALSE 0
+## 7  FALSE 0
+## 8  FALSE 0
+## 9  FALSE 0
+## 10 FALSE 0
+## 11 FALSE 0
+## 12 FALSE 0
+## 13  TRUE 3
+## 14 FALSE 0
+## 15 FALSE 0
+## 16 FALSE 0
+## 17  TRUE 4
+## 18  TRUE 4
+## 19  TRUE 4
+## 20  TRUE 4
+## 21  TRUE 4
+## 22 FALSE 0
+## 23 FALSE 0
+## 24 FALSE 0
+## 25 FALSE 0
+## 26  TRUE 5
+## 27 FALSE 0
+## 28 FALSE 0
+## 29  TRUE 6
+## 30  TRUE 6
+</code></pre>
+
+<p>But from the present viewpoint what is important is <em>how</em> <code>T.seg.loop</code> implements iteration</p>
+
+<ol>
+<li><code>for</code> enumerates a components of an integer vector generated by <code>sec</code></li>
+<li><code>i</code>, <code>v[i]</code> and <code>w.j</code> and <code>w</code> play the role of state variables</li>
+<li>the expressions <code>w &lt;- c(w, 0)</code> and <code>w &lt;- c(w, w.j)</code> together with the <code>for</code> loop accumulate the result</li>
+<li>updating <code>v[i]</code> and hence <code>w.j</code> and <code>w</code> require the entire <code>v</code> to be available within <code>T.seg.loop</code></li>
+<li>enumeration, updating and accumulation are all tied to a single control-flow construct</li>
+<li>the two expressions of accumulation are scattered in different parts of the <code>for</code> loop</li>
+</ol>
+
+<p>As a result of last two characteristics <code>T.seg.loop</code> is concise but &ldquo;monolithic&rdquo; hence conceptually convoluted, which would hinder its analysis and debugging (if it were necessary).  To achieve a more modular design, we turn to functional programming.</p>
+
+<h2>Solution using the functional paradigm</h2>
+
+<p>Instead of immediately presenting <code>T.seg.funprog</code>, the functional counterpart of <code>T.seg.loop</code>, in its complete form, I build it piece-by-piece, demonstrating modularity.  I begin by reformulating the problem for a reason to become clear shortly.  While the ultimately aim is \(w=(1,0,0,2,0,0,&hellip;)\) it will be useful to first compute a vector \(z=(1,-1,-1,2,-2,-2,&hellip;)\).  Under our toy example</p>
+
+<pre><code># this is not R code
+v = (T, F, F,T,T, F, F, F, F, F, F, F,T, F, F, F,T,T,T,T,T, F, F, F, F,T,F, F,T,T) # input
+z = (1,-1,-1,2,2,-2,-2,-2,-2,-2,-2,-2,3,-3,-3,-3,4,4,4,4,4,-4,-4,-4,-4,5,5,-5,6,6) # desired output
+</code></pre>
+
+<p>Once \(z\) is computed then it is easy to obtain the desired \(w\) using the function</p>
+
+<pre><code class="r">do.zero &lt;- function(z)
+    ifelse(z &gt; 0, z, 0)
+</code></pre>
+
+<p>\(z\) crucially differs from \(w\) in that not only each \(T\)-segment but also each \(F\)-segment has its unique label, a non-positive integer.  (Note that the label of the first \(F\)-segment would be zero both for \(w\) and \(z\) if \(v\) didn&#39;t begin with a \(T\).)  Therefore, in the \(i\)-th step of an iterative process \(z_i\) can be updated solely from \(z_{i-1}\) and \(v_i\). In contrast updating of \(w_i\) requires not only \(w_{i-1}\) and \(v_i\) but also an additional state variable; in the case of <code>T.seq.loop</code> this was the role of <code>w.j</code>.</p>
+
+<p>Now we need the following:</p>
+
+<ol>
+<li>a procedure that updates \(z_i\) given \(z_{i-1}\) and \(v_i\)</li>
+<li>an accumulator using that procedure</li>
+</ol>
+
+<p>Before addressing the first point, it will be convenient to initialize the data frame that will hold \(v\) and the desired \(z\)</p>
+
+<pre><code class="r">df &lt;- data.frame(v = v)
+df$z &lt;- integer(length(df$v))
+df$z[1] &lt;- as.integer(df$v[1])
+</code></pre>
+
+<p>It will also be convenient to restructure the data frame <code>df</code> into the list <code>l.df</code>, whose components are single-row data frames each representing row of <code>df</code>.</p>
+
+<pre><code class="r">l.df &lt;- lapply(seq_len(nrow(df)), function(i) df[i, ])
+l.df[1:2]
+</code></pre>
+
+<pre><code>## [[1]]
+##      v z
+## 1 TRUE 1
+## 
+## [[2]]
+##       v z
+## 2 FALSE 0
+</code></pre>
+
+<p>The procedure updating \(z_i\) is</p>
+
+<pre><code class="r">T.seg.binop &lt;- function(A, B) {
+    last.A &lt;- A[nrow(A), ] # last row of A
+    helper &lt;- function() { # returns z for B
+        if(last.A$v) {
+            if(B$v) last.A$z
+            else - last.A$z
+        } else {
+            if(B$v) 1 - last.A$z
+            else last.A$z
+        }
+    }
+    B$z &lt;- helper() # replace initial z with correct z
+    rbind(A, B) # append B to the end of A
+}
+</code></pre>
+
+<p>The name expresses that <code>T.seq.binop</code> is a binary operator taking two data frames <code>A</code> and <code>B</code> returns a single data frame third one by modifying <code>B</code> and appending that to <code>A</code>.  Less important is that \(z_i\) is actually computed slightly more conveniently from \(z_{i-1}\) and \(v_i\) and \(v_{i-1}\) than from only \(z_{i-1}\) and \(v_i\) because the latter would require checking if \(z_{i-1}\lt 0\).</p>
+
+<p>A suitable accumulator is already implemented in <code>base::Reduce</code>.  Now we are ready to compute \(z\)</p>
+
+<pre><code class="r">df &lt;- Reduce(T.seg.binop, l.df)
+df$z
+</code></pre>
+
+<pre><code>##  [1]  1 -1 -1  2  2 -2 -2 -2 -2 -2 -2 -2  3 -3 -3 -3  4  4  4  4  4 -4 -4
+## [24] -4 -4  5 -5 -5  6  6
+</code></pre>
+
+<p>Putting everything together</p>
+
+<pre><code class="r">T.seg.funprog &lt;- function(v, F.as.zero = TRUE, ...) {
+    df &lt;- data.frame(v = v)
+    df$z &lt;- integer(length(df$v))
+    df$z[1] &lt;- as.integer(df$v[1])
+    df &lt;- Reduce(T.seg.binop, lapply(seq_len(nrow(df)), function(i) df[i, ]), ...)
+    if(F.as.zero)
+        data.frame(v = v, w = do.zero(df$z))
+    else df
+}
+</code></pre>
+
+<p>This function gives the same answer as its loop-based counterpart.</p>
+
+<pre><code class="r">all.equal(T.seg.funprog(v), T.seg.loop(v))
+</code></pre>
+
+<pre><code>## [1] TRUE
+</code></pre>
+
+<p>Yet, <code>T.seg.funprog</code> is rather different from <code>T.seg.loop</code> in that</p>
+
+<ol>
+<li>enumeration and accumulation is implemented in <code>Reduce</code> and is done directly on <code>l.df</code> instead of an auxiliary integer vector</li>
+<li>no separate state variables (like <code>w.j</code> in <code>T.seg.loop</code>) are needed because the state of the process at each step is represented by the state of the accumulating result</li>
+<li>a separate binary operator <code>T.seg.binop</code> updates the state independently of the enumerator/accumulator <code>T.seg.loop</code></li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p>In case of this toy problem the functional programming approach appears conceptually more pleasing due to its modularity.  On the other hand, it required longer code, multiple functions, the division of a single problem (finding \(w\) given \(v\)) into two sub problems (finding \(z\) given \(v\) and \(w\) given \(z\)), and restructuring the initial data frame <code>df</code> into the list <code>l.df</code>.</p>
+
+<h2>Epilogue: What is accumulation?</h2>
+
+<p>The accumulator <code>Reduce</code> in <code>T.seq.funprog</code> takes the generalized vector <code>l.df</code> and accumulates the value of <code>T.seg.binop</code> called in successive steps.  In the \(i\)-th step the <code>A</code> argument to <code>T.seg.binop</code> is the value of the same function at the \(i-1\)-th step and the <code>B</code> argument is the \(i\)-th component of <code>l.df</code>, that is <code>l.df[[i]]</code>.  In the final step <code>T.seg.binop(A, B)</code> evaluates to the desired data frame.</p>
+
+<p>By default <code>Reduce</code> returns only that final result.  However, <code>Reduce</code> can can additionally return the successive intermediate results when called with the <code>accumulate = TRUE</code> argument.  The terminology might sound confusing but with the default <code>accumulate = FALSE</code> argument <code>Reduce</code> is still <a href="https://www.mitpress.mit.edu/sicp/full-text/book/book-Z-H-15.html#%_sec_2.2.3">considered</a> an accumulator.  Setting terminology aside, calling <code>Reduce</code> in <code>T.seg.funprog</code> with <code>accumulate = TRUE</code> evaluates to a list of data frames, each component showing the state of the iterative process at the corresponding step:</p>
+
+<pre><code class="r">T.seg.funprog(v, F.as.zero = FALSE, accumulate = TRUE)[1:3]
+</code></pre>
+
+<pre><code>## [[1]]
+##      v z
+## 1 TRUE 1
+## 
+## [[2]]
+##       v  z
+## 1  TRUE  1
+## 2 FALSE -1
+## 
+## [[3]]
+##       v  z
+## 1  TRUE  1
+## 2 FALSE -1
+## 3 FALSE -1
+</code></pre>
+
+<p>Given the above definition of <code>T.seg.binop</code> the only use of <code>accumulate = TRUE</code> in solving this toy problem is only didactic.  But suppose we had a version of <code>T.seg.binop</code>, say <code>T.seg.binop.2</code>, that returns only the modified <code>B</code> without appending it to <code>A</code>.  In that case <code>accumulate = TRUE</code> would be necessary to obtain the desired result.  But then <code>Reduce</code> would evaluate to a <em>list</em> of one-row data frames&mdash;the updated version of <code>l.df</code>.  So that value would have to be restructured to obtain single data frame by another round of accumulation, this time with the binary operator expressed by the <code>rbind</code> function.  Therefore <code>T.seg.funprog</code> would have to be modified as</p>
+
+<pre><code class="r">T.seg.funprog &lt;- function(v, F.as.zero = TRUE, ...) {
+    df &lt;- data.frame(v = v)
+    df$z &lt;- integer(length(df$v))
+    df$z[1] &lt;- as.integer(df$v[1])
+    # beginning of modification
+    l.df &lt;- Reduce(T.seg.binop.2, lapply(seq_len(nrow(df)), function(i) df[i, ]), ...)
+    df &lt;- Reduce(rbind, l.df)
+    # end of modification
+    if(F.as.zero)
+        data.frame(v = v, w = do.zero(df$z))
+    else df
+}
+</code></pre>
+
