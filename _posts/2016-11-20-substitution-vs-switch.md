@@ -1,9 +1,9 @@
 ---
 layout: default
 title: "Substitution vs Switch"
+Rdir: "/R/2016-11-20-substitution-vs-switch/"
+featimg: guess-switch-1.png
 ---
-
-## Summary
 
 1. general task: evaluate arbitrary elements of a sequence of expressions
 1. specific task: produce normal Q--Q plots for a sequence of distributions
@@ -116,7 +116,7 @@ library(lattice)
 plot.ls(s = s, guess = FALSE, main = "Four distributions")
 ```
 
-![plot of chunk unnamed-chunk-6]({{ site.baseurl }}/R/2016-11-20-substitution-vs-switch/figure/unnamed-chunk-6-1.png)
+![plot of chunk known-dist-switch]({{ site.baseurl }}/R/2016-11-20-substitution-vs-switch/figure/known-dist-switch-1.png)
 
 The student notes that, relative to the standard normal distribution, the t distribution has heavier tails, the gamma distribution is not supported on negative numbers, and that the effect of rounding is a step-like pattern in the Q--Q plot.
 
@@ -135,7 +135,7 @@ library(lattice)
 ans <- plot.ls(s = s, guess = TRUE)
 ```
 
-![plot of chunk unnamed-chunk-8]({{ site.baseurl }}/R/2016-11-20-substitution-vs-switch/figure/unnamed-chunk-8-1.png)
+![plot of chunk guess-switch]({{ site.baseurl }}/R/2016-11-20-substitution-vs-switch/figure/guess-switch-1.png)
 
 Once she/he guessed the distributions, the correct answers are printed.
 
@@ -202,7 +202,7 @@ s <- sample.d.substitute(x = 1:6, ld = l.distr)
 plot.ls(s = s, guess = FALSE, call2strip = TRUE, main = "Six distributions")
 ```
 
-![plot of chunk unnamed-chunk-13]({{ site.baseurl }}/R/2016-11-20-substitution-vs-switch/figure/unnamed-chunk-13-1.png)
+![plot of chunk known-dist-substitute]({{ site.baseurl }}/R/2016-11-20-substitution-vs-switch/figure/known-dist-substitute-1.png)
 
 The teacher likes `sample.d.substitute` so much that she/he starts exercising with it.
 
@@ -213,7 +213,7 @@ s <- sample.d.substitute(sample(seq_along(l.distr), 10, replace = TRUE), ld = l.
 ans <- plot.ls(s = s, guess = TRUE, layout = c(5, 2))
 ```
 
-![plot of chunk unnamed-chunk-14]({{ site.baseurl }}/R/2016-11-20-substitution-vs-switch/figure/unnamed-chunk-14-1.png)
+![plot of chunk guess-substitute]({{ site.baseurl }}/R/2016-11-20-substitution-vs-switch/figure/guess-substitute-1.png)
 
 Checking answers:
 

@@ -2,9 +2,9 @@
 layout: default
 title: Reshaping Data from Longitudinal and Factorial Experiments
 tags: [ reshape, Iris, lattice, experimental-design, factor ]
+Rdir: "/R/2016-07-14-sequential-reshapes/"
+featimg: "correct.F-1.png"
 ---
-
-## Motivation
 
 Graphic packages like `lattice` and `ggplot2` work best when data are presented in **long format** as opposed to **wide format** into which data are typically imported and in which it is usually convenient to perform calculations.  For example `morley` is a data frame in long format, which allows functions like `lattice::xyplot` to receive simple formulas and yet produce a complex trellis display.
 
@@ -17,7 +17,7 @@ opts_chunk$set(dpi = 144)
 ```
 
 Take e.g. the formula `Speed ~ Run | Expt`, in which the speed of light measured by Michelson in 1879 plays the role of a response variable, the measurement run that of a predictor and the experimental replicate acts as a conditioning variable:
-```{r}
+```{r morley}
 morley$Expt <- as.factor(paste("Expt", morley$Expt)) # adjustment for xyplot
 xyplot(Speed ~ Run | Expt, data = morley)
 ```

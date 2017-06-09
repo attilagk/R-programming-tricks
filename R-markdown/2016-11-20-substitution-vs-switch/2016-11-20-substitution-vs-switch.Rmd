@@ -1,9 +1,9 @@
 ---
 layout: default
 title: "Substitution vs Switch"
+Rdir: "/R/2016-11-20-substitution-vs-switch/"
+featimg: guess-switch-1.png
 ---
-
-## Summary
 
 1. general task: evaluate arbitrary elements of a sequence of expressions
 1. specific task: produce normal Q--Q plots for a sequence of distributions
@@ -88,7 +88,7 @@ str(s <- sample.d.switch(x = 1:4))
 
 The teacher tells the student to first plot the sequence of samples with `plot.ls` and display the families as well so that the student can analyze their shapes before having to solve the "real" exercise: the reverse task, that is.
 
-```{r}
+```{r known-dist-switch}
 library(lattice)
 plot.ls(s = s, guess = FALSE, main = "Four distributions")
 ```
@@ -103,7 +103,7 @@ s <- sample.d.switch(x = c(3, 2, 2, 1, 2, 1))
 
 When the student plots these samples with `guess = TRUE`, this is what she/he sees:
 
-```{r}
+```{r guess-switch}
 library(lattice)
 ans <- plot.ls(s = s, guess = TRUE)
 ```
@@ -159,14 +159,14 @@ l.distr$normal.cauchy.mix <- quote(c(rnorm(n = n - m), rcauchy(n = m)))
 
 Now, the system is ready for the test.
 
-```{r}
+```{r known-dist-substitute}
 s <- sample.d.substitute(x = 1:6, ld = l.distr)
 plot.ls(s = s, guess = FALSE, call2strip = TRUE, main = "Six distributions")
 ```
 
 The teacher likes `sample.d.substitute` so much that she/he starts exercising with it.
 
-```{r}
+```{r guess-substitute}
 set.seed(13) # challenging superstition
 s <- sample.d.substitute(sample(seq_along(l.distr), 10, replace = TRUE), ld = l.distr)
 ans <- plot.ls(s = s, guess = TRUE, layout = c(5, 2))

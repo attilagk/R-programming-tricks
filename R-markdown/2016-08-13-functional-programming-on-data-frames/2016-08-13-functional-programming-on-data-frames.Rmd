@@ -3,8 +3,6 @@ layout: default
 title: "Iteration: Loops vs Functional Programming"
 ---
 
-## Introduction
-
 Iterative processes are characterized by successive steps forming a sequence of states captured by **state variables**.  In each step the state variables are updated based on themselves and some rule.  Iteration is often implemented using control-flow constructs like the `for` or `while` **loop** (see `?Control` for help).
 
 The **functional programming** paradigm offers an alternative vocabulary for iteration---as well as for other types of processes---based on some possibly generic vector.  That vector, often a list, provides a [conventional interface][sicp] for certain higher order functions (see `?base::Reduce` for help).  These higher order functions all *enumerate* the components of the vector and apply to each component some other function which they receive as argument.  Depending on the return value of that function argument and the number of *its* arguments, such a higher order function may play a number of roles:
