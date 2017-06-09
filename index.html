@@ -8,19 +8,20 @@ layout: default
 
   <div class="outer-container" style="display: flex; flex-wrap: wrap;">
       {% for post in site.posts %}
-      <div class="inner-container" style="position: relative; width: 50%;">
+      <div class="inner-container" style="position: relative; width: 45%;
+      margin: 5px; padding: 1%; border: 0px solid gray;
+      background-color: white; box-shadow: 2px 2px 5px gray;">
+      <a class="post-link" href="{{ post.url | prepend: site.baseurl }}" style="position: relative;">
           <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
           
-          <h2> {{ post.title }} </h2>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}"
-                               style="position: relative;">
-              <img src="{{ site.baseurl }}{{ post.Rdir }}figure/{{ post.featimg }}" alt="">
-              <div style="">{{ post.excerpt }}</div>
-          </a>
+          <h3> {{ post.title }} </h3>
+          <img src="{{ site.baseurl }}{{ post.Rdir }}figure/{{ post.featimg }}" alt="">
+          <div style="position: static;">{{ post.excerpt }}</div>
 
           <!-- <div class="post meta">
               <p>{{ post.excerpt }}</p>
           </div> -->
+          </a>
       </div>
       {% endfor %}
   </div>
