@@ -53,31 +53,14 @@ layout: default
       <a class="inner-container" href="{{ post.url | prepend: site.baseurl }}" style="">
           <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
           
-          <img src="{{ site.baseurl }}{{ post.Rdir }}figure/{{ post.featimg }}" alt="">
+          <img src="{{ site.baseurl }}{{ post.Rdir }}/figure/{{ post.featimg }}" alt="">
           <div class="excerpt">
               <h3> {{ post.title }} </h3>
               <p>{{ post.excerpt }}</p>
-              <p>Consectetur perferendis libero cupiditate libero repellendus? Odio necessitatibus est ab nobis ab? Alias corporis quidem aliquam molestiae vitae sunt id doloremque Facilis aut beatae quidem dolorum nemo? Ipsum autem nisi cupiditate minima omnis Eaque nisi perspiciatis voluptatibus voluptas impedit Magni quis nostrum deleniti voluptatibus odit, vitae. Dicta modi nulla laboriosam ab error, numquam Repellendus aperiam iste in laudantium quos iure, animi, distinctio illum sunt? Quos sit enim incidunt in numquam minima Ipsum voluptas accusantium reprehenderit reiciendis maxime numquam pariatur mollitia fugiat Vitae ipsa praesentium unde earum inventore, eaque a Laudantium eaque veritatis recusandae consectetur itaque Nihil amet autem officia nemo aliquam minima. Cupiditate velit nostrum alias et assumenda? Beatae possimus nesciunt tempora ex consectetur Dolor dolorum at tempora ad rem. Magni sunt!</p>
           </div>
-          <!-- <div class=excerpt style="">{{ post.excerpt }}</div> -->
-
-          <!-- <div class="post meta">
-              <p>{{ post.excerpt }}</p>
-          </div> -->
           </a>
-      
-      <!-- <div class="inner-container"></div> -->
       {% endfor %}
   </div>
-  <!-- <ul class="post-list">
-      <li>
-      <h2>
-      <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-      </h2>
-      <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-      <span class="post meta">{{ post.excerpt }}</span>
-      </li>
-      </ul> -->
 
   <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
 
