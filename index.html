@@ -8,6 +8,7 @@ layout: default
     }
     .wrapper section {
         width: auto;
+        max-width: auto;
     }
     .outer-container {
         display: flex;
@@ -15,15 +16,30 @@ layout: default
     }
     .inner-container {
         position: relative;
-        flex-basis: 400px;
+        flex-basis: 350px;
+        min-height: 350px;
         margin: 5px;
         padding: 10px;
         border: 0px solid gray;
         background-color: white;
         box-shadow: 2px 2px 5px gray;
     }
+    .inner-container > img {
+        /* width: 95%; */
+    }
     .inner-container .excerpt {
-        position: static;
+        position: absolute;
+        top: 10px;
+        opacity: 0.0;
+        transition: opacity 0.5s;
+        max-height: 350px;
+        overflow: scroll;
+    }
+    .inner-container .excerpt:hover {
+        background-color: rgba(255,255,255,0.9);
+        color: black;
+        -moz-transition: opacity 0.5s;
+        opacity: 1;
     }
 </style>
 
@@ -37,8 +53,12 @@ layout: default
       <a class="inner-container" href="{{ post.url | prepend: site.baseurl }}" style="">
           <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
           
-          <h3> {{ post.title }} </h3>
           <img src="{{ site.baseurl }}{{ post.Rdir }}figure/{{ post.featimg }}" alt="">
+          <div class="excerpt">
+              <h3> {{ post.title }} </h3>
+              <p>{{ post.excerpt }}</p>
+              <p>Consectetur perferendis libero cupiditate libero repellendus? Odio necessitatibus est ab nobis ab? Alias corporis quidem aliquam molestiae vitae sunt id doloremque Facilis aut beatae quidem dolorum nemo? Ipsum autem nisi cupiditate minima omnis Eaque nisi perspiciatis voluptatibus voluptas impedit Magni quis nostrum deleniti voluptatibus odit, vitae. Dicta modi nulla laboriosam ab error, numquam Repellendus aperiam iste in laudantium quos iure, animi, distinctio illum sunt? Quos sit enim incidunt in numquam minima Ipsum voluptas accusantium reprehenderit reiciendis maxime numquam pariatur mollitia fugiat Vitae ipsa praesentium unde earum inventore, eaque a Laudantium eaque veritatis recusandae consectetur itaque Nihil amet autem officia nemo aliquam minima. Cupiditate velit nostrum alias et assumenda? Beatae possimus nesciunt tempora ex consectetur Dolor dolorum at tempora ad rem. Magni sunt!</p>
+          </div>
           <!-- <div class=excerpt style="">{{ post.excerpt }}</div> -->
 
           <!-- <div class="post meta">
