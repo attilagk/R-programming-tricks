@@ -1,70 +1,93 @@
 ---
-layout: default
 ---
+<!DOCTYPE html>
 
-<style>
-    .inner {
-        max-width: 100%;
-    }
-    .wrapper {
-        /* width: auto; */
-    }
-    .wrapper section {
-        max-width: 100%;
-    }
-    .outer-container {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .inner-container {
-        position: relative;
-        min-width: 350px;
-        max-width: 400px;
-        min-height: 350px;
-        margin: 5px;
-        padding: 10px;
-        border: 0px solid gray;
-        background-color: white;
-        box-shadow: 2px 2px 5px gray;
-    }
-    .inner-container > img {
-        width: 95%;
-    }
-    .inner-container .excerpt {
-        position: absolute;
-        top: 10px;
-        opacity: 0.0;
-        transition: opacity 0.5s;
-        max-height: 350px;
-        overflow: scroll;
-    }
-    .inner-container .excerpt:hover {
-        background-color: rgba(255,255,255,0.9);
-        color: black;
-        -moz-transition: opacity 0.5s;
-        opacity: 1;
-    }
-</style>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
+    <meta name="description" content="{{ site.title | default: site.github.repository_name }} : {{ site.description | default: site.github.project_tagline }}">
 
-<div class="home">
+    <link rel="stylesheet" type="text/css" media="screen" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
 
-  <h1 class="page-heading">Posts</h1>
-
-  <div class="outer-container" style="">
-      {% for post in site.posts %}
-
-      <a class="inner-container" href="{{ post.url | prepend: site.baseurl }}" style="">
-          <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
-          
-          <img src="{{ site.baseurl }}{{ post.Rdir }}/figure/{{ post.featimg }}" alt="">
-          <div class="excerpt">
-              <h3> {{ post.title }} </h3>
-              <p>{{ post.excerpt }}</p>
-          </div>
-          </a>
-      {% endfor %}
-  </div>
-
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
-
-</div>
+    <title>{{ site.title | default: site.github.repository_name }}</title>
+    <style>
+        .inner {
+            max-width: 100%;
+        }
+        .wrapper {
+            /* width: auto; */
+        }
+        .wrapper section {
+            max-width: 100%;
+        }
+        .outer-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .inner-container {
+            /* position: relative; */
+            min-width: 350px;
+            max-width: 350px;
+            min-height: 150px;
+            margin: 5px;
+            margin-bottom: 0px;
+            padding: 10px;
+            border: 0px solid gray;
+            background-color: white;
+            box-shadow: 2px 2px 5px gray;
+            color: initial;
+        }
+        .inner-container h1, h2, h3, h4, p {
+            margin-bottom: 0px;
+        }
+        .inner-container-2 {
+            padding-top: 0px;
+            position: relative;
+            color: initial;
+        }
+        .inner-container-2 > img {
+            width: 100%;
+        }
+        .inner-container-2 .excerpt {
+            position: absolute;
+            top: 0px;
+            opacity: 0.1;
+            transition: opacity 0.5s;
+        }
+        .inner-container-2 .excerpt:hover {
+            opacity: 1;
+            background-color: rgba(255,255,255,0.9);
+            transition: opacity 0.5s;
+        }
+    </style>
+  </head>
+    <body>
+    
+    <div class="home">
+    
+        <h1 class="page-heading">{{ site.title }}</h1>
+    
+      <div class="outer-container" style="">
+          {% for post in site.posts %}
+    
+          <a class="inner-container" href="{{ post.url | prepend: site.baseurl }}" style="">
+              <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
+              
+              <h3 class="post-title"> {{ post.title }} </h3>
+              <p>{{ post.date | date: "%b %d, %Y" }}</p>
+              <div class="inner-container-2">
+                  <img src="{{ site.baseurl }}{{ post.Rdir }}/figure/{{ post.featimg }}" alt="">
+                  <div class="excerpt">
+                      <p>{{ post.excerpt }} </p>
+                  </div>
+              </div>
+              </a>
+          {% endfor %}
+      </div>
+    
+      <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+    
+    </div>
+</body></html>
