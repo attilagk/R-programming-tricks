@@ -78,7 +78,7 @@
               <h3 class="post-title"> {{ post.title }} </h3>
               <p>{{ post.date | date: "%b %d, %Y" }}</p>
               <div class="inner-container-2">
-                  <img src="{{ site.baseurl }}{{ post.Rdir }}/figure/{{ post.featimg }}" alt="">
+                  <img src="{{ site.baseurl }}/R{{ post.url | remove: '.html' }}/figure/{{ post.featimg }}" alt="">
                   <div class="excerpt">
                       <p>{{ post.excerpt }} </p>
                   </div>
