@@ -10,3 +10,9 @@ Betas <- lapply(M, function(l3m) {
                              do.call(make.groups,
                                      lapply(l2m,
                                             get.estimate.CI, conf.lev = 0.99))))
+
+do.call idiom because I use it a lot
+
+immediately applied (called) anonymous function and scoping
+
+illustrate mixed effects models' fixed and random terms
