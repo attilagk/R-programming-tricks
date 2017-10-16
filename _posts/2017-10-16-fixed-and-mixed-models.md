@@ -5,8 +5,6 @@ tags: [ regression ]
 Rdir: "/R/2017-10-16-fixed-and-mixed-models/"
 ---
 
-Hello, World!
-
 
 ```r
 library(lme4)
