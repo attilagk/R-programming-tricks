@@ -6,9 +6,9 @@ Rdir: "/R/2017-10-16-fixed-and-mixed-models/"
 featimg: "observed-only-1.png"
 ---
 
-## Demo
+Fixed and mixed models are fitted to the sleepstudy dataset to investigate how human reaction slows down with sleep deprivation.
 
-### Data
+## Data
 
 The `sleepstudy` dataset from the `lme4` package is chosen for the demonstration.  Below is the description of `sleepstudy`
 
@@ -28,6 +28,76 @@ Plotting the average reaction time against the test day for each subject...
 
 ```{r observed-only}
 xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3))
+```
+
+## Fixed models
+
+```{r observed-lm}
+xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3),
+       panel = function(x, y) {
+           panel.xyplot(x, y)
+           panel.lmline(x, y)
+       })
+```
+
+```{r}
+subjects <- levels(sleepstudy$Subject)
+names(subjects) <- subjects
+M <- list()
+M$fixed <-
+    lapply(subjects,
+           function(s) {
+               df <- subset(sleepstudy, Subject == s)
+               lm(Reaction ~ Days, data = df)
+           })
+```
+
+### Prediction
+
+```{r lm-obs-pred}
+dotplot(as.matrix(data.frame(observed = subset(sleepstudy, Days == 0, "Reaction", drop = TRUE),
+                             predicted = sapply(M$fixed, function(m) summary(m)$coefficients[1, "Estimate", drop = FALSE]))),
+        auto.key = TRUE, xlab = "reaction time at day 0", ylab = "subject")
+```
+
+```{r lm-pred}
+days <- c(14, 21)
+names(days) <- paste0("day.", days)
+pred <- list()
+pred$fixed <- t(sapply(M$fixed, predict, data.frame(Days = days)))
+dotplot(pred$fixed, auto.key = TRUE, xlab = "predicted reaction time", ylab = "subject")
+```
+
+## Mixed models
+
+```{r}
+M1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+M2 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+df <- cbind(sleepstudy, data.frame(yhat.M1 = predict(M1), yhat.M2 = predict(M2)))
+```
+
+The magenta lines represent the fitted line under `M1`, the green lines under `M2` (the observed data remain cyan).
+
+```{r observed-predicted-M1}
+xyplot(Reaction + yhat.M1 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
+       auto.key = list(text = c("observed", "predicted by M1"), points = FALSE, lines = TRUE))
+```
+
+```{r observed-predicted-M2}
+xyplot(Reaction + yhat.M2 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
+       auto.key = list(text = c("observed", "predicted by M2"), points = FALSE, lines = TRUE))
+```
+
+```{r observed-predicted}
+df <- cbind(sleepstudy, data.frame(yhat.M1 = predict(M1), yhat.M2 = predict(M2)))
+xyplot(Reaction + yhat.M1 + yhat.M2 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
+       auto.key = list(text = c("observed", "predicted by M1", "predicted by M2"), points = FALSE, lines = TRUE))
+```
+
+## Inference
+
+```{r}
+t(sapply(M$fixed, function(m) summary(m)$coefficients[2, c(1, 4)]))
 ```
 
 ### Models
@@ -51,19 +121,6 @@ M1: \; \gamma &\sim& \mathcal{N}(0, \Omega_\gamma) \\\\
 M2: \; \gamma &=& 0
 \end{eqnarray*}
 $$
-
-```{r}
-M1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-M2 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-```
-
-The magenta lines represent the fitted line under `M1`, the green lines under `M2` (the observed data remain cyan).
-
-```{r observed-predicted}
-df <- cbind(sleepstudy, data.frame(yhat.M1 = predict(M1), yhat.M2 = predict(M2)))
-xyplot(Reaction + yhat.M1 + yhat.M2 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
-       auto.key = list(text = c("observed", "predicted by M1", "predicted by M2"), points = FALSE, lines = TRUE))
-```
 
 ### Hypothesis testing
 

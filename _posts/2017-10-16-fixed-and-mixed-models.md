@@ -6,9 +6,9 @@ Rdir: "/R/2017-10-16-fixed-and-mixed-models/"
 featimg: "observed-only-1.png"
 ---
 
-## Demo
+Fixed and mixed models are fitted to the sleepstudy dataset to investigate how human reaction slows down with sleep deprivation.
 
-### Data
+## Data
 
 The `sleepstudy` dataset from the `lme4` package is chosen for the demonstration.  Below is the description of `sleepstudy`
 
@@ -45,6 +45,119 @@ xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3))
 
 <img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-only-1.png" title="plot of chunk observed-only" alt="plot of chunk observed-only" width="700px" />
 
+## Fixed models
+
+
+```r
+xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3),
+       panel = function(x, y) {
+           panel.xyplot(x, y)
+           panel.lmline(x, y)
+       })
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-lm-1.png" title="plot of chunk observed-lm" alt="plot of chunk observed-lm" width="700px" />
+
+
+```r
+subjects <- levels(sleepstudy$Subject)
+names(subjects) <- subjects
+M <- list()
+M$fixed <-
+    lapply(subjects,
+           function(s) {
+               df <- subset(sleepstudy, Subject == s)
+               lm(Reaction ~ Days, data = df)
+           })
+```
+
+### Prediction
+
+
+```r
+dotplot(as.matrix(data.frame(observed = subset(sleepstudy, Days == 0, "Reaction", drop = TRUE),
+                             predicted = sapply(M$fixed, function(m) summary(m)$coefficients[1, "Estimate", drop = FALSE]))),
+        auto.key = TRUE, xlab = "reaction time at day 0", ylab = "subject")
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/lm-obs-pred-1.png" title="plot of chunk lm-obs-pred" alt="plot of chunk lm-obs-pred" width="700px" />
+
+
+```r
+days <- c(14, 21)
+names(days) <- paste0("day.", days)
+pred <- list()
+pred$fixed <- t(sapply(M$fixed, predict, data.frame(Days = days)))
+dotplot(pred$fixed, auto.key = TRUE, xlab = "predicted reaction time", ylab = "subject")
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/lm-pred-1.png" title="plot of chunk lm-pred" alt="plot of chunk lm-pred" width="700px" />
+
+## Mixed models
+
+
+```r
+M1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+M2 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+df <- cbind(sleepstudy, data.frame(yhat.M1 = predict(M1), yhat.M2 = predict(M2)))
+```
+
+The magenta lines represent the fitted line under `M1`, the green lines under `M2` (the observed data remain cyan).
+
+
+```r
+xyplot(Reaction + yhat.M1 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
+       auto.key = list(text = c("observed", "predicted by M1"), points = FALSE, lines = TRUE))
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-M1-1.png" title="plot of chunk observed-predicted-M1" alt="plot of chunk observed-predicted-M1" width="700px" />
+
+
+```r
+xyplot(Reaction + yhat.M2 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
+       auto.key = list(text = c("observed", "predicted by M2"), points = FALSE, lines = TRUE))
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-M2-1.png" title="plot of chunk observed-predicted-M2" alt="plot of chunk observed-predicted-M2" width="700px" />
+
+
+```r
+df <- cbind(sleepstudy, data.frame(yhat.M1 = predict(M1), yhat.M2 = predict(M2)))
+xyplot(Reaction + yhat.M1 + yhat.M2 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
+       auto.key = list(text = c("observed", "predicted by M1", "predicted by M2"), points = FALSE, lines = TRUE))
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-1.png" title="plot of chunk observed-predicted" alt="plot of chunk observed-predicted" width="700px" />
+
+## Inference
+
+
+```r
+t(sapply(M$fixed, function(m) summary(m)$coefficients[2, c(1, 4)]))
+```
+
+```
+##      Estimate     Pr(>|t|)
+## 308 21.764702 3.264657e-03
+## 309  2.261785 4.931443e-02
+## 310  6.114899 1.980757e-03
+## 330  3.008073 2.552687e-01
+## 331  5.266019 7.550229e-02
+## 332  9.566768 1.914426e-01
+## 333  9.142045 1.583426e-04
+## 334 12.253141 6.352350e-04
+## 335 -2.881034 5.064731e-02
+## 337 19.025974 5.530467e-06
+## 349 13.493933 2.285006e-05
+## 350 19.504017 8.617903e-05
+## 351  6.433498 3.324544e-02
+## 352 13.566549 1.306668e-03
+## 369 11.348109 1.860407e-04
+## 370 18.056151 1.378251e-04
+## 371  9.188445 1.040424e-02
+## 372 11.298073 1.716323e-05
+```
+
 ### Models
 
 We consider two models, $$M1$$ and $$M2$$.  These are nested: $$M1 \supset M2$$, meaning that $$M1$$ is more general while $$M2$$ is a constrained version of $$M1$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\mu$$.  Moreover, both models also account for the subject-specific variation about $$\mu$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$g = 1,...,G$$.  However, only $$M1$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_G$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_G$$.
@@ -66,23 +179,6 @@ M1: \; \gamma &\sim& \mathcal{N}(0, \Omega_\gamma) \\\\
 M2: \; \gamma &=& 0
 \end{eqnarray*}
 $$
-
-
-```r
-M1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-M2 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-```
-
-The magenta lines represent the fitted line under `M1`, the green lines under `M2` (the observed data remain cyan).
-
-
-```r
-df <- cbind(sleepstudy, data.frame(yhat.M1 = predict(M1), yhat.M2 = predict(M2)))
-xyplot(Reaction + yhat.M1 + yhat.M2 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
-       auto.key = list(text = c("observed", "predicted by M1", "predicted by M2"), points = FALSE, lines = TRUE))
-```
-
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-1.png" title="plot of chunk observed-predicted" alt="plot of chunk observed-predicted" width="700px" />
 
 ### Hypothesis testing
 
