@@ -7,6 +7,10 @@ Rdir: "/R/2017-10-17-classification/"
 
 Hello, World!
 
+## Data
+
+We are going to use the home data from [A visual introduction to machine learning](http://www.r2d3.us/visual-intro-to-machine-learning-part-1/)
+
 ```{r}
 library(lattice)
 lattice.options(default.args = list(as.table = TRUE))
@@ -35,3 +39,7 @@ xyplot(elevation ~ price_per_sqft, data = home, groups = city, col = my.col)
 ```{r}
 splom(~ home[3:9], data = home, groups = city, auto.key = TRUE, pscales = 0)
 ```
+
+## CART: Classification And Regression Tree (Decision Tree)
+
+![Fig]({{ site.baseurl }}/figures/elements-stats-learning-fig-9.2.jpg)
