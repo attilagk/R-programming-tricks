@@ -32,13 +32,7 @@ xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3))
 
 ## Fixed models
 
-```{r observed-lm}
-xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3),
-       panel = function(x, y) {
-           panel.xyplot(x, y)
-           panel.lmline(x, y)
-       })
-```
+Fitting
 
 ```{r}
 subjects <- levels(sleepstudy$Subject)
@@ -52,13 +46,25 @@ M$fixed <-
            })
 ```
 
+Plotting fitted curves along with data
+
+```{r observed-lm}
+xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3),
+       panel = function(x, y) {
+           panel.xyplot(x, y)
+           panel.lmline(x, y)
+       })
+```
+
 ### Prediction
 
-```{r lm-obs-pred}
+```{r lm-obs-pred, eval=FALSE, echo=FALSE}
 dotplot(as.matrix(data.frame(observed = subset(sleepstudy, Days == 0, "Reaction", drop = TRUE),
                              predicted = sapply(M$fixed, function(m) summary(m)$coefficients[1, "Estimate", drop = FALSE]))),
         auto.key = TRUE, xlab = "reaction time at day 0", ylab = "subject")
 ```
+
+What would reaction time be for each person after 14 or 21 days of sleep deprivation?
 
 ```{r lm-pred}
 days <- c(14, 21)

@@ -1,0 +1,37 @@
+---
+layout: default
+title: Classification
+tags: [ classification ]
+Rdir: "/R/2017-10-17-classification/"
+---
+
+Hello, World!
+
+```{r}
+library(lattice)
+lattice.options(default.args = list(as.table = TRUE))
+lattice.options(default.theme = "standard.theme")
+opts_chunk$set(dpi = 144)
+opts_chunk$set(out.width = "700px")
+opts_chunk$set(dev = c("png", "pdf"))
+```
+
+```{r}
+home <- read.csv("ny-sf-home-data.csv")
+home <- cbind(data.frame(city = factor(home$in_sf)), home)
+levels(home$city) <- c("NY", "SF")
+head(home)
+```
+
+```{r}
+trellis.par.set(superpose.symbol = list(pch = 20, alpha = 0.2, col = c(my.col <- c("blue", "green3"), trellis.par.get("superpose.symbol")$col[3:7])))
+```
+
+```{r}
+densityplot(~ elevation | city, data = home, groups = city, plot.points = "rug", layout = c(1, 2), xlim = c(0, 250), col = my.col)
+xyplot(elevation ~ price_per_sqft, data = home, groups = city, col = my.col)
+```
+
+```{r}
+splom(~ home[3:9], data = home, groups = city, auto.key = TRUE, pscales = 0)
+```

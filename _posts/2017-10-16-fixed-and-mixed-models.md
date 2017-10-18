@@ -47,16 +47,7 @@ xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3))
 
 ## Fixed models
 
-
-```r
-xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3),
-       panel = function(x, y) {
-           panel.xyplot(x, y)
-           panel.lmline(x, y)
-       })
-```
-
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-lm-1.png" title="plot of chunk observed-lm" alt="plot of chunk observed-lm" width="700px" />
+Fitting
 
 
 ```r
@@ -71,16 +62,24 @@ M$fixed <-
            })
 ```
 
-### Prediction
+Plotting fitted curves along with data
 
 
 ```r
-dotplot(as.matrix(data.frame(observed = subset(sleepstudy, Days == 0, "Reaction", drop = TRUE),
-                             predicted = sapply(M$fixed, function(m) summary(m)$coefficients[1, "Estimate", drop = FALSE]))),
-        auto.key = TRUE, xlab = "reaction time at day 0", ylab = "subject")
+xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3),
+       panel = function(x, y) {
+           panel.xyplot(x, y)
+           panel.lmline(x, y)
+       })
 ```
 
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/lm-obs-pred-1.png" title="plot of chunk lm-obs-pred" alt="plot of chunk lm-obs-pred" width="700px" />
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-lm-1.png" title="plot of chunk observed-lm" alt="plot of chunk observed-lm" width="700px" />
+
+### Prediction
+
+
+
+What would reaction time be for each person after 14 or 21 days of sleep deprivation?
 
 
 ```r
