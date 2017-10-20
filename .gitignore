@@ -3,7 +3,7 @@ _site
 .jekyll-metadata
 
 # standalone figures
-*.pdf
+#*.pdf
 
 # swap files (made by e.g. vim)
 *.swp
