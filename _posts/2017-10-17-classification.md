@@ -7,6 +7,8 @@ Rdir: "/R/2017-10-17-classification/"
 
 Hello, World!
 
+Download presentation [here]({{ site.baseurl }}/assets/machine-learning-attilagk.pdf)
+
 ## Data
 
 We are going to use the home data from [A visual introduction to machine learning](http://www.r2d3.us/visual-intro-to-machine-learning-part-1/)
