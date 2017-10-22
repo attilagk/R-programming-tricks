@@ -119,12 +119,12 @@ printcp(M$complex.tree)
 ## 
 ##           CP nsplit rel error  xerror     xstd
 ## 1  0.5803571      0   1.00000 1.00000 0.049313
-## 2  0.0892857      1   0.41964 0.43750 0.039549
-## 3  0.0267857      3   0.24107 0.27232 0.032634
-## 4  0.0089286      5   0.18750 0.26339 0.032169
-## 5  0.0066964      6   0.17857 0.28571 0.033311
-## 6  0.0000000      8   0.16518 0.27679 0.032862
-## 7 -1.0000000     17   0.16518 0.27679 0.032862
+## 2  0.0892857      1   0.41964 0.43304 0.039396
+## 3  0.0267857      3   0.24107 0.26786 0.032403
+## 4  0.0089286      5   0.18750 0.25000 0.031449
+## 5  0.0066964      6   0.17857 0.26339 0.032169
+## 6  0.0000000      8   0.16518 0.25893 0.031932
+## 7 -1.0000000     17   0.16518 0.25893 0.031932
 ```
 
 ```r
@@ -132,6 +132,8 @@ plotcp(M$complex.tree, upper = "splits")
 ```
 
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/complexity-1.png" title="plot of chunk complexity" alt="plot of chunk complexity" width="700px" />
+
+Thus the optimal tree is the one below and this model will be used for the classification tasks in the next section.  Notice how only a subset of input variables appear on the tree so that the rest are deemed uninformative.  Moreover, $$\mathrm{elevation}$$ and $$\mathrm{price\_per\_sqft}$$ each appear at two splits, which underscores their importance.
 
 
 ```r

@@ -72,6 +72,8 @@ printcp(M$complex.tree)
 plotcp(M$complex.tree, upper = "splits")
 ```
 
+Thus the optimal tree is the one below and this model will be used for the classification tasks in the next section.  Notice how only a subset of input variables appear on the tree so that the rest are deemed uninformative.  Moreover, $$\mathrm{elevation}$$ and $$\mathrm{price\_per\_sqft}$$ each appear at two splits, which underscores their importance.
+
 ```{r tree}
 M$tree <- rpart(city ~ beds + bath + price + year_built + sqft + price_per_sqft + elevation, data = home)
 plot(M$tree, margin = 0.01)
