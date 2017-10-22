@@ -3,15 +3,16 @@ layout: default
 title: Classification
 tags: [ classification ]
 Rdir: "/R/2017-10-17-classification/"
+featimg: "tree-1.png"
 ---
 
-First paragraph.
+Decision tree model is fitted to toy data on homes in New York and San Francisco (NY, SF).  Along the way overfitting is illustrated.  The optimally fitted tree is used to classify some test data as either NY or SF.
 
-Download presentation [here]({{ site.baseurl }}/assets/machine-learning-attilagk.pdf)
+Download the related presentation [here]({{ site.baseurl }}/assets/machine-learning-attilagk.pdf)
 
-## Data
+## Data and analytical tools
 
-We are going to use the home data from [A visual introduction to machine learning](http://www.r2d3.us/visual-intro-to-machine-learning-part-1/)
+We are going to use the home data and the machine learning approach called decision tree or CART (Classification And Regression Tree) from [A visual introduction to machine learning](http://www.r2d3.us/visual-intro-to-machine-learning-part-1/), referred to here as *visual intro*.  As CART implementation we are going to take advantage of the `rpart` package.  As usual in this blog, we opt for `lattice` graphics.
 
 
 ```r
@@ -24,28 +25,45 @@ opts_chunk$set(out.width = "700px")
 opts_chunk$set(dev = c("png", "pdf"))
 ```
 
+Now read the data...
+
 
 ```r
 home <- read.csv("ny-sf-home-data.csv")
 home <- cbind(data.frame(city = factor(home$in_sf)), home)
 levels(home$city) <- c("NY", "SF")
-head(home)
+head(home, n = 2)
 ```
 
 ```
 ##   city in_sf beds bath   price year_built sqft price_per_sqft elevation
 ## 1   NY     0    2    1  999000       1960 1000            999        10
 ## 2   NY     0    2    2 2750000       2006 1418           1939         0
-## 3   NY     0    2    2 1350000       1900 2150            628         9
-## 4   NY     0    1    1  629000       1903  500           1258         9
-## 5   NY     0    0    1  439000       1930  500            878        10
-## 6   NY     0    0    1  439000       1930  500            878        10
 ```
+
+```r
+tail(home, n = 2)
+```
+
+```
+##     city in_sf beds bath  price year_built sqft price_per_sqft elevation
+## 491   SF     1    1    1 649000       1983  850            764       163
+## 492   SF     1    3    2 995000       1956 1305            762       216
+```
+
+So our data are 492 observations on homes in two cities: New York and San Francisco ($$\mathrm{NY},\mathrm{SF}$$).  We'll treat $$\mathrm{city}$$ (equivalent to the $$\mathrm{in\_sf}$$ variable) as a categorical output with classes $$\mathrm{NY},\mathrm{SF}$$.  The rest of variables (except for $$\mathrm{in\_sf}$$) will be treated as input.
+
+Here we reproduce the scatter plot matrix from *visual intro*.
 
 
 ```r
 trellis.par.set(superpose.symbol = list(pch = 20, alpha = 0.2, col = c(my.col <- c("blue", "green3"), trellis.par.get("superpose.symbol")$col[3:7])))
+splom(~ home[3:9], data = home, groups = city, auto.key = TRUE, pscales = 0)
 ```
+
+<img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/splom-1.png" title="plot of chunk splom" alt="plot of chunk splom" width="700px" />
+
+Elevation seems like an input variable that is informative for distinguishing NY from SF.  But the empirical distribution of elevation for NY overlaps considerably with SF at lower elevations.  Therefore additional variables like $$\mathrm{price\_per\_sqft}$$ would be useful.
 
 
 ```r
@@ -60,18 +78,13 @@ xyplot(elevation ~ price_per_sqft, data = home, groups = city, col = my.col)
 
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/elevation-price-per-sqft-2.png" title="plot of chunk elevation-price-per-sqft" alt="plot of chunk elevation-price-per-sqft" width="700px" />
 
+## CART / decision tree
 
-```r
-splom(~ home[3:9], data = home, groups = city, auto.key = TRUE, pscales = 0)
-```
-
-<img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/splom-1.png" title="plot of chunk splom" alt="plot of chunk splom" width="700px" />
-
-## CART: Classification And Regression Tree (Decision Tree)
-
-Figure 9.2 from Hastie et al 2009 explaining partitions and CART.
+This figure 9.2 from Hastie et al 2009 explains the recursive partitioning of CART.
 
 ![Fig]({{ site.baseurl }}/figures/elements-stats-learning-fig-9.2.jpg)
+
+We first fit the decision tree
 
 
 ```r
