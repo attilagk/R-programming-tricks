@@ -63,7 +63,7 @@ splom(~ home[3:9], data = home, groups = city, auto.key = TRUE, pscales = 0)
 
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/splom-1.png" title="plot of chunk splom" alt="plot of chunk splom" width="700px" />
 
-Elevation seems like an input variable that is informative for distinguishing NY from SF.  But the empirical distribution of elevation for NY overlaps considerably with SF at lower elevations.  Therefore additional variables like $$\mathrm{price\_per\_sqft}$$ would be useful.
+Elevation seems like an input variable that is informative for distinguishing NY from SF.  But the empirical distribution of elevation for NY overlaps considerably with SF at lower elevations.  Therefore additional variables like $$\mathrm{price\_per\_sqft}$$ would be useful for training a good classifier.
 
 
 ```r
@@ -80,11 +80,11 @@ xyplot(elevation ~ price_per_sqft, data = home, groups = city, col = my.col)
 
 ## CART / decision tree
 
-This figure 9.2 from Hastie et al 2009 explains the recursive partitioning of CART.
+This figure 9.2 from Hastie et al 2009 explains the recursive partitioning of CART.  *Visual intro* provides elegant dynamic visualization of the fitting process.
 
 ![Fig]({{ site.baseurl }}/figures/elements-stats-learning-fig-9.2.jpg)
 
-We first fit the decision tree
+We first fit the decision tree with `control = rpart.control(cp = -1)`, which allows the tree to grow beyond optimal size and thus overfit the data.
 
 
 ```r
@@ -96,6 +96,36 @@ text(M$complex.tree, col = "brown", font = 2, use.n = FALSE, all = FALSE, cex = 
 
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/complex-tree-1.png" title="plot of chunk complex-tree" alt="plot of chunk complex-tree" width="700px" />
 
+The table and plot show the complexity parameter table at 7 different "prunings" sequentially nested in the overfitted tree above.  5 splits correspond to the optimal pruning.
+
+
+```r
+printcp(M$complex.tree)
+```
+
+```
+## 
+## Classification tree:
+## rpart(formula = city ~ beds + bath + price + year_built + sqft + 
+##     price_per_sqft + elevation, data = home, control = rpart.control(cp = -1))
+## 
+## Variables actually used in tree construction:
+## [1] bath           elevation      price          price_per_sqft
+## [5] sqft           year_built    
+## 
+## Root node error: 224/492 = 0.45528
+## 
+## n= 492 
+## 
+##           CP nsplit rel error  xerror     xstd
+## 1  0.5803571      0   1.00000 1.00000 0.049313
+## 2  0.0892857      1   0.41964 0.43750 0.039549
+## 3  0.0267857      3   0.24107 0.27232 0.032634
+## 4  0.0089286      5   0.18750 0.26339 0.032169
+## 5  0.0066964      6   0.17857 0.28571 0.033311
+## 6  0.0000000      8   0.16518 0.27679 0.032862
+## 7 -1.0000000     17   0.16518 0.27679 0.032862
+```
 
 ```r
 plotcp(M$complex.tree, upper = "splits")
@@ -112,7 +142,7 @@ text(M$tree, col = "brown", font = 2, use.n = TRUE, all = TRUE, cex = 0.9)
 
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/tree-1.png" title="plot of chunk tree" alt="plot of chunk tree" width="700px" />
 
-## Prediction
+## Classification
 
 Let's predict the city at the average of each input variable taking the following values:
 
