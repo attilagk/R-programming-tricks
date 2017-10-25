@@ -73,7 +73,7 @@ densityplot(~ elevation | city, data = home, groups = city, plot.points = "rug",
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/elevation-price-per-sqft-1.png" title="plot of chunk elevation-price-per-sqft" alt="plot of chunk elevation-price-per-sqft" width="700px" />
 
 ```r
-xyplot(elevation ~ price_per_sqft, data = home, groups = city, col = my.col)
+xyplot(elevation ~ price_per_sqft, data = home, groups = city, col = my.col, auto.key = TRUE)
 ```
 
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/elevation-price-per-sqft-2.png" title="plot of chunk elevation-price-per-sqft" alt="plot of chunk elevation-price-per-sqft" width="700px" />
@@ -96,7 +96,7 @@ text(M$complex.tree, col = "brown", font = 2, use.n = FALSE, all = FALSE, cex = 
 
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/complex-tree-1.png" title="plot of chunk complex-tree" alt="plot of chunk complex-tree" width="700px" />
 
-The table and plot show the complexity parameter table at 7 different "prunings" sequentially nested in the overfitted tree above.  5 splits correspond to the optimal pruning.
+The table and plot show the complexity parameter table at 7 different "prunings" sequentially nested in the overfitted tree above.  3 splits correspond to the optimal pruning.
 
 
 ```r
@@ -119,12 +119,12 @@ printcp(M$complex.tree)
 ## 
 ##           CP nsplit rel error  xerror     xstd
 ## 1  0.5803571      0   1.00000 1.00000 0.049313
-## 2  0.0892857      1   0.41964 0.43304 0.039396
-## 3  0.0267857      3   0.24107 0.26786 0.032403
-## 4  0.0089286      5   0.18750 0.25000 0.031449
-## 5  0.0066964      6   0.17857 0.26339 0.032169
-## 6  0.0000000      8   0.16518 0.25893 0.031932
-## 7 -1.0000000     17   0.16518 0.25893 0.031932
+## 2  0.0892857      1   0.41964 0.43750 0.039549
+## 3  0.0267857      3   0.24107 0.27232 0.032634
+## 4  0.0089286      5   0.18750 0.27679 0.032862
+## 5  0.0066964      6   0.17857 0.31696 0.034797
+## 6  0.0000000      8   0.16518 0.32589 0.035200
+## 7 -1.0000000     17   0.16518 0.32589 0.035200
 ```
 
 ```r

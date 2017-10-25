@@ -47,7 +47,7 @@ Elevation seems like an input variable that is informative for distinguishing NY
 
 ```{r elevation-price-per-sqft}
 densityplot(~ elevation | city, data = home, groups = city, plot.points = "rug", layout = c(1, 2), xlim = c(0, 250), col = my.col)
-xyplot(elevation ~ price_per_sqft, data = home, groups = city, col = my.col)
+xyplot(elevation ~ price_per_sqft, data = home, groups = city, col = my.col, auto.key = TRUE)
 ```
 
 ## CART / decision tree
