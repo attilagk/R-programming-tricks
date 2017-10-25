@@ -96,7 +96,7 @@ text(M$complex.tree, col = "brown", font = 2, use.n = FALSE, all = FALSE, cex = 
 
 <img src="{{ site.baseurl }}/R/2017-10-17-classification/figure/complex-tree-1.png" title="plot of chunk complex-tree" alt="plot of chunk complex-tree" width="700px" />
 
-The table and plot show the complexity parameter table at 7 different "prunings" sequentially nested in the overfitted tree above.  3 splits correspond to the optimal pruning.
+The table and plot show the complexity parameter table at 7 different "prunings" sequentially nested in the overfitted tree above.  8 splits correspond to the optimal pruning.
 
 
 ```r
@@ -120,11 +120,11 @@ printcp(M$complex.tree)
 ##           CP nsplit rel error  xerror     xstd
 ## 1  0.5803571      0   1.00000 1.00000 0.049313
 ## 2  0.0892857      1   0.41964 0.43750 0.039549
-## 3  0.0267857      3   0.24107 0.27232 0.032634
-## 4  0.0089286      5   0.18750 0.27679 0.032862
-## 5  0.0066964      6   0.17857 0.31696 0.034797
-## 6  0.0000000      8   0.16518 0.32589 0.035200
-## 7 -1.0000000     17   0.16518 0.32589 0.035200
+## 3  0.0267857      3   0.24107 0.26339 0.032169
+## 4  0.0089286      5   0.18750 0.24107 0.030953
+## 5  0.0066964      6   0.17857 0.24107 0.030953
+## 6  0.0000000      8   0.16518 0.23214 0.030444
+## 7 -1.0000000     17   0.16518 0.23214 0.030444
 ```
 
 ```r
