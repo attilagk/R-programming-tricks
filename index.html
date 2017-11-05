@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
 
     <title>{{ site.title | default: site.github.repository_name }}</title>
+
     <style>
         .inner {
             max-width: 100%;
@@ -68,7 +69,30 @@
     <div class="home">
     
         <h1 class="page-heading">{{ site.title }}</h1>
+
+        <p>A blog on programming and data analysis with R</p>
     
+        <h3> Are you experienced in...  </h3>
+        <p>
+            <ul>
+                <li>functional programming?</li>
+                <li>the evaluation modes of R expressions?</li>
+                <li>representing mathematical objects with R objects?</li>
+                <li>fitting and interpreting various models?</li>
+            </ul>
+            Simply put: are you experienced in R?
+        </p>
+
+        <p>This blog is meant to help both you and me answer with a "yes".</p>
+
+        <h3>About me</h3>
+
+        <p>I'm a postdoctoral researcher in statistical genetics at Mount
+            Sinai School of Medicine, New York.  In my free time I learn and develop web
+            technologies and tools, often in a team of friends called Lazy8.</p>
+    
+    <div class="outer-container">
+    </div>
       <div class="outer-container" style="">
           {% for post in site.posts %}
     

@@ -16,5 +16,6 @@ github_username:  attilagk
 
 # Build settings
 markdown: kramdown
+#theme: jekyll-theme-merlot
 theme: jekyll-theme-leap-day
 permalink: /:categories/:year-:month-:day-:title.html
