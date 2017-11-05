@@ -57,10 +57,41 @@
             opacity: 0.1;
             transition: opacity 0.5s;
         }
+        .inner-container-2 .excerpt > img {
+            opacity: 1;
+        }
         .inner-container-2 .excerpt:hover {
             opacity: 1;
             background-color: rgba(255,255,255,0.9);
             transition: opacity 0.5s;
+        }
+        .home {
+        }
+        article {
+            border: 1em solid rgba(0,0,0,0.0);
+            padding: 1em;
+        }
+        body {
+        }
+        header {
+            position: relative;
+        }
+        nav {
+            position: relative;
+            top: 0;
+            color: white;
+            flex: 100%;
+            display: flex;
+        }
+        nav ul {
+            display: flex;
+            flex: 2;
+        }
+        nav ul li {
+            display: inline;
+        }
+        article::before {
+            /* content: "hello, world!"; */
         }
     </style>
   </head>
@@ -68,11 +99,34 @@
     
     <div class="home">
     
-        <h1 class="page-heading">{{ site.title }}</h1>
+        <header class="myheader">
+            <h1 class="page-heading">{{ site.title }}</h1>
+            <p>A blog on programming and data analysis with R</p>
+            <nav>
+                <ul>
+                    <li>Are you...?</li>
+                    <li>About</li>
+                    <li>Articles</li>
+                    <li>GitHub</li>
+                </ul>
+            </nav>
+        </header>
 
-        <p>A blog on programming and data analysis with R</p>
-    
-        <h3> Are you experienced in...  </h3>
+        <!-- <div id="banner">
+            <span id="logo"></span>
+
+            <a
+                  href="http://github.com/attilagk/R-you-experienced"
+                  class="button fork"><strong>View On
+                      GitHub</strong></a>
+
+        </div> --><!-- end banner -->
+
+        <main>
+        <article>
+
+                    
+        <h2> <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt=""> you experienced in...  </h2>
         <p>
             <ul>
                 <li>functional programming?</li>
@@ -82,36 +136,45 @@
             </ul>
             Simply put: are you experienced in R?
         </p>
-
         <p>This blog is meant to help both you and me answer with a "yes".</p>
+        <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+        
+        </article>
 
-        <h3>About me</h3>
-
-        <p>I'm a postdoctoral researcher in statistical genetics at Mount
+        <article>
+        <h2>About me</h2>
+        <p>
+            My name is Attila.  I'm a postdoctoral researcher in statistical genetics at Mount
             Sinai School of Medicine, New York.  In my free time I learn and develop web
-            technologies and tools, often in a team of friends called Lazy8.</p>
+            technologies and tools, often in a team of friends called Lazy8.
+            You can find out more about me from <a href="https://www.linkedin.com/in/attilagk/">my LinkedIn
+            profile</a>.
+        </p>
+        </article>
+        
+        <article>
+        <h2>Articles</h2>
+
+            <div class="outer-container" style="">
+                {% for post in site.posts %}
+
+                <a class="inner-container" href="{{ post.url | prepend: site.baseurl }}" style="">
+                    <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
+
+                    <h3 class="post-title"> {{ post.title }} </h3>
+                    <p>{{ post.date | date: "%b %d, %Y" }}</p>
+                    <div class="inner-container-2">
+                        <img src="{{ site.baseurl }}/R{{ post.url | remove: '.html' }}/figure/{{ post.featimg }}" alt="">
+                        <div class="excerpt">
+                            <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt="">
+                            <p>{{ post.excerpt }} </p>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </article>
     
-    <div class="outer-container">
-    </div>
-      <div class="outer-container" style="">
-          {% for post in site.posts %}
-    
-          <a class="inner-container" href="{{ post.url | prepend: site.baseurl }}" style="">
-              <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
-              
-              <h3 class="post-title"> {{ post.title }} </h3>
-              <p>{{ post.date | date: "%b %d, %Y" }}</p>
-              <div class="inner-container-2">
-                  <img src="{{ site.baseurl }}/R{{ post.url | remove: '.html' }}/figure/{{ post.featimg }}" alt="">
-                  <div class="excerpt">
-                      <p>{{ post.excerpt }} </p>
-                  </div>
-              </div>
-              </a>
-          {% endfor %}
-      </div>
-    
-      <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
-    
+        </main>
     </div>
 </body></html>
