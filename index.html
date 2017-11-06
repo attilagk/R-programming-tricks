@@ -118,9 +118,20 @@
             /* border: 1em solid rgba(0,0,0,0.0); */
             /* padding-top: 3em; */
             padding-top: 140px;
+            display: flex;
+        }
+        article#content {
+            display: block;
         }
         article::before {
             /* content: "hello, world!"; */
+        }
+        article div.mytext {
+            flex: 2;
+            max-width: 800px;
+        }
+        article aside {
+            flex: 1;
         }
     </style>
   </head>
@@ -140,7 +151,7 @@
                     <a href="{{ site.baseurl }}/#content">Content</a>
                     </li>
                     <li>
-                    <a href="{{ site.baseurl }}/#about">About</a>
+                    <a href="{{ site.baseurl }}/#about">About me</a>
                     </li>
                     <li>
                         <a href="http://github.com/{{ site.github_username }}{{ site.baseurl }}">GitHub</a>
@@ -162,18 +173,24 @@
         <main>
 
         <article id="home">
-        <h2> <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt=""> you experienced in...  </h2>
-        <p>
-            <ul>
-                <li>functional programming?</li>
-                <li>different evaluation modes of R expressions?</li>
-                <li>representing mathematical objects with R objects?</li>
-                <li>fitting and interpreting various models?</li>
-            </ul>
-            Simply put: are you experienced in R?
-        </p>
-        <p>This blog aims to help both you and me to answer with a "yes".</p>
-        <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+            <div class="mytext">
+                <h2> <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt=""> you experienced in...  </h2>
+                <p>
+                    <ul>
+                        <li>functional programming?</li>
+                        <li>different evaluation modes of R expressions?</li>
+                        <li>representing mathematical objects with R objects?</li>
+                        <li>fitting and interpreting various models?</li>
+                    </ul>
+                    Simply put: are you experienced in R?
+                </p>
+                <p>This blog aims to help both you and me to answer with a "yes".</p>
+                <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+            </div>
+            <aside>
+                <img src="{{ site.baseurl }}/assets/jimi-job-interview.jpg"
+                     height="400px" alt="">
+            </aside>
         </article>
 
         <article id="content">
@@ -200,6 +217,7 @@
         </article>
     
         <article id="about">
+            <div class="mytext">
         <h2>About me</h2>
         <p>
             My name is Attila Gulyás-Kovács, pronounced as
@@ -210,6 +228,11 @@
             You can find out more about me from <a href="https://www.linkedin.com/in/attilagk/">my LinkedIn
             profile</a>.
         </p>
+            </div>
+            <aside>
+                <img src="{{ site.baseurl }}/assets/explain-rll-wireframe-1.png"
+                     height="400px" alt="">
+            </aside>
         </article>
         
         </main>
