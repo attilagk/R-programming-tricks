@@ -14,21 +14,11 @@
     <title>{{ site.title | default: site.github.repository_name }}</title>
 
     <style>
-        .inner {
-            max-width: 100%;
-        }
-        .wrapper {
-            /* width: auto; */
-        }
-        .wrapper section {
-            max-width: 100%;
-        }
         .outer-container {
             display: flex;
             flex-wrap: wrap;
         }
         .inner-container {
-            /* position: relative; */
             min-width: 340px;
             max-width: 340px;
             min-height: 150px;
@@ -40,7 +30,7 @@
             box-shadow: 2px 2px 5px gray;
             color: initial;
         }
-        .inner-container h1, h2, h3, h4, p {
+        .inner-container h3, h4, p {
             margin-bottom: 0px;
         }
         .inner-container-2 {
@@ -50,6 +40,10 @@
         }
         .inner-container-2 > img {
             width: 100%;
+        }
+        .inner-container-2 > .hoversensor {
+            position: absolute;
+            top: 0px;
         }
         .inner-container-2 .excerpt {
             position: absolute;
@@ -65,63 +59,12 @@
             background-color: rgba(255,255,255,0.9);
             transition: opacity 0.5s;
         }
-        .home {
-        }
         body {
             min-width: 400px;
-            /* max-width: 1200px; */
             width: 90%;
             margin: 0 auto;
-        }
-        header.myheader {
-            /* position: static; */
-            /* padding: 0px 0px 0px 0px; */
-            /* height: 140px; */
-            /* width: 100%; */
-            /* max-width: none; */
-        }
-        header h1 {
-            /* text-align: center; */
-        }
-        nav.mynav {
-            position: relative;
-            top: 0;
-            /* color: white; */
-            /* text-shadow: 0px 2px 0px #235796; */
-            flex: 100%;
-            display: flex;
-            width: 90%;
-            margin: auto;
-            left: 0;
-        }
-        nav.mynav ul {
-            margin: 0 auto;
-            list-style-type: none;
-            display: flex;
-            padding: 0;
-            width: 70%;
-            margin-top: 20px;
-        }
-        nav.mynav ul li {
-            display: inline;
-            flex: 1;
-            text-align: center;
-            background-color: rgb(0,0,0,0.1);
-            margin: 0px 1em;
-        }
-        nav.mynav ul a {
-            color: white;
-        }
-        main {
-        }
-        #intro {
-            /* display: flex; */
-            /* flex-wrap: wrap; */
         }
         section {
-            /* border: 1em solid rgba(0,0,0,0.0); */
-            /* padding-top: 3em; */
-            /* display: flex; */
             width: auto;
             padding-right: 5px;
             padding-left: 5px;
@@ -132,23 +75,15 @@
             flex: 1 300px;
             display: flex;
             flex-wrap: wrap;
-            /* background-color: white; */
-            /* margin: 1em; */
-            /* margin-top: 190px; */
             justify-content: space-around;
         }
         section#articles {
-            /* display: block; */
             margin-top: 0px;
-        }
-        article::before {
-            /* content: "hello, world!"; */
         }
         section div.mytext {
             flex: 1;
             max-width: 390px;
             min-width: 200px;
-            /* margin: 1em; */
         }
         section aside {
             flex: 1;
@@ -174,6 +109,11 @@
         <section id="intro">
 
         <h1>Introduction</h1>
+                <p>
+                    Listen to <a href="https://vimeo.com/109988488">Jimi's song</a>.
+                    Subscribe to this blog <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a>.
+                    Let's get experienced!
+                </p>
 
             <div class="outer-container" style="">
         <div class="inner-container" id="ryou">
@@ -181,19 +121,18 @@
                 <h2>R you experienced in</h2>
                 <p>
                     <ul>
-                        <li>functional programming?</li>
-                        <li>different evaluation modes of R expressions?</li>
-                        <li>representing mathematical objects with R objects?</li>
-                        <li>fitting and interpreting various models?</li>
+                        <li>statistics and machine learning?</li>
+                        <li>model fitting and selection?</li>
+                        <li>representing math structures in R?</li>
+                        <li>R functions and enclosing environments?</li>
+                        <li>abstractions with higher order functions?</li>
+                        <li>(non)standard evaluation of R expressions?</li>
                     </ul>
-                    Simply put: are you experienced in R?
                 </p>
-                <p>This blog aims to help both you and me to answer with a "yes".</p>
-                <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+                <!-- <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p> -->
             </div>
             <aside>
-                <img src="{{ site.baseurl }}/assets/R_logo.svg" 
-                     width="400px" alt="">
+                <img src="{{ site.baseurl }}/figures/R_logo.svg" width="400px" alt="">
             </aside>
         </div>
 
@@ -201,17 +140,18 @@
             <div class="mytext">
         <h2>About me</h2>
         <p>
-            My name is Attila Gulyás-Kovács, pronounced as
-            <a href="https://forvo.com/search/Attila%20Guly%c3%a1s-Kov%c3%a1cs/">[ˈɒtilɒ ˈgujaːʃ ˈkovaːt͡ʃ]</a>.
-            I'm a postdoctoral researcher in statistical genetics at Mount
-            Sinai School of Medicine, New York.  In my free time I learn and develop web
-            technologies and tools, often in a team of friends called Lazy8.
-            You can find out more about me from <a href="https://www.linkedin.com/in/attilagk/">my LinkedIn
-            profile</a>.
+            I am a multidisciplinary scientist based in New York.
+            See and hear my peculiar Hungarian name
+            <a href="https://forvo.com/search/Attila%20Guly%c3%a1s-Kov%c3%a1cs/">on Forvo</a>.
+            Currently I work as a postdoctoral researcher in statistical genetics at Mount
+            Sinai School of Medicine.  Besides but not unrelated to that
+            research I explore more general questions in statistics, and in computer
+            programming and play with web technologies.  You can find out more about my professional
+            activities <a href="https://www.linkedin.com/in/attilagk/">on LinkedIn</a>.
         </p>
             </div>
             <aside>
-                <img src="{{ site.baseurl }}/assets/explain-rll-wireframe-1.png" alt="">
+                <img src="{{ site.baseurl }}/figures/explain-rll-wireframe-1.png" alt="">
             </aside>
         </div>
         </div>
@@ -220,6 +160,9 @@
 
         <section id="articles">
         <h1>Articles</h1>
+        <p>Hover above an <img src="{{ site.baseurl }}/figures/R_logo.svg"
+                                height="15px" alt=""> symbol to reveal
+                                abstract.  Click to read whole article.</p>
 
             <div class="outer-container" style="">
                 {% for post in site.posts %}
@@ -231,8 +174,10 @@
                     <p>{{ post.date | date: "%b %d, %Y" }}</p>
                     <div class="inner-container-2">
                         <img src="{{ site.baseurl }}/R{{ post.url | remove: '.html' }}/figure/{{ post.featimg }}" alt="">
+                        <div class="hoversensor">
+                            <img src="{{ site.baseurl }}/figures/R_logo.svg" height="40" alt="">
+                        </div>
                         <div class="excerpt">
-                            <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt="">
                             <p>{{ post.excerpt }} </p>
                         </div>
                     </div>
