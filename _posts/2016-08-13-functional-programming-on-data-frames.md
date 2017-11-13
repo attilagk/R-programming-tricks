@@ -11,7 +11,12 @@ The **functional programming** paradigm offers an alternative vocabulary for ite
 * *map*, e.g. `Map` and `lapply`, where the function argument acts as a unary operator on single components of the vector
 * *accumulator*, e.g. `Reduce`, where the function argument acts as a *binary operator* on pairs of objects derived from the vector
 
-Here the same toy problem will be solved iteratively either with a `for` loop or with the accumulator `Reduce` to highlight shared features and differences between the two strategies.  The toy problem will also illustrate that `Reduce` can deal with generalized vectors---in the case a list of data frames.
+
+A general syntax and semantics is illustrated below (figure source [here](http://www.modernescpp.com/index.php/higher-order-functions)).  Note that the R-specific syntax uses uppercase initials: `Filter`, `Map`, `Reduce`.
+
+![Fig]({{ site.baseurl }}/figures/MapFilterReduce.jpg)
+
+In what follows a toy problem will be solved iteratively either with a `for` loop or with the accumulator `Reduce` to highlight shared features and differences between the two strategies.  The toy problem will also illustrate that `Reduce` can deal with generalized vectors---in the case a list of data frames.
 
 ## The problem
 
