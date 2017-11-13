@@ -29,8 +29,8 @@
         }
         .inner-container {
             /* position: relative; */
-            min-width: 350px;
-            max-width: 350px;
+            min-width: 340px;
+            max-width: 340px;
             min-height: 150px;
             margin: 5px;
             margin-bottom: 0px;
@@ -115,15 +115,19 @@
         main {
         }
         #intro {
-            display: flex;
-            flex-wrap: wrap;
+            /* display: flex; */
+            /* flex-wrap: wrap; */
         }
         section {
             /* border: 1em solid rgba(0,0,0,0.0); */
             /* padding-top: 3em; */
-            display: flex;
+            /* display: flex; */
+            width: auto;
+            padding-right: 5px;
+            padding-left: 5px;
+            padding-bottom: 20px;
         }
-        div#intro > section {
+        #intro div.inner-container {
             max-width: 800px;
             flex: 1 300px;
             display: flex;
@@ -134,9 +138,8 @@
             justify-content: space-around;
         }
         section#articles {
-            display: block;
+            /* display: block; */
             margin-top: 0px;
-            width: auto;
         }
         article::before {
             /* content: "hello, world!"; */
@@ -156,42 +159,24 @@
   </head>
     <body>
     
-    <div class="home">
-    
         <header class="myheader">
             <h1 class="page-heading">{{ site.title | default: site.github.repository_name }}</h1>
             <p>{{ site.description }}</p>
-            <!-- <p>A blog on programming and data analysis with R</p> -->
-            <!-- <nav class="mynav">
-                <ul>
-                    <li>
-                    <a href="{{ site.baseurl }}/#ryou">R you?</a>
-                    </li>
-                    <li>
-                    <a href="{{ site.baseurl }}/#articles">Articles</a>
-                    </li>
-                    <li>
-                    <a href="{{ site.baseurl }}/#about">About me</a>
-                    </li>
-                    <li>
-                        <a href="http://github.com/{{ site.github_username }}{{ site.baseurl }}">GitHub</a>
-                    </li>
-                </ul>
-            </nav> -->
         </header>
 
         <div id="banner">
             <span id="logo"></span>
-
             <a href="http://github.com/attilagk/R-you-experienced" class="button fork"><strong>View On GitHub</strong></a>
-
         </div>
 
         <main>
 
-        <div id="intro">
+        <section id="intro">
 
-        <section id="ryou">
+        <h1>Introduction</h1>
+
+            <div class="outer-container" style="">
+        <div class="inner-container" id="ryou">
             <div class="mytext">
                 <h2>R you experienced in</h2>
                 <p>
@@ -210,9 +195,9 @@
                 <img src="{{ site.baseurl }}/assets/R_logo.svg" 
                      width="400px" alt="">
             </aside>
-        </section>
+        </div>
 
-        <section id="about">
+        <div class="inner-container" id="about">
             <div class="mytext">
         <h2>About me</h2>
         <p>
@@ -228,12 +213,13 @@
             <aside>
                 <img src="{{ site.baseurl }}/assets/explain-rll-wireframe-1.png" alt="">
             </aside>
-        </section>
-        
         </div>
+        </div>
+        
+        </section>
 
         <section id="articles">
-        <h2>Articles</h2>
+        <h1>Articles</h1>
 
             <div class="outer-container" style="">
                 {% for post in site.posts %}
@@ -256,5 +242,5 @@
         </section>
     
         </main>
-    </div>
-</body></html>
+</body>
+</html>
