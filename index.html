@@ -118,36 +118,39 @@
             display: flex;
             flex-wrap: wrap;
         }
-        article {
+        section {
             /* border: 1em solid rgba(0,0,0,0.0); */
             /* padding-top: 3em; */
             display: flex;
         }
-        div#intro > article {
+        div#intro > section {
             max-width: 800px;
             flex: 1 300px;
             display: flex;
             flex-wrap: wrap;
-            background-color: white;
-            margin: 1em;
-            margin-top: 190px;
+            /* background-color: white; */
+            /* margin: 1em; */
+            /* margin-top: 190px; */
             justify-content: space-around;
         }
-        article#articles {
+        section#articles {
             display: block;
-            margin-top: 190px;
+            margin-top: 0px;
+            width: auto;
         }
         article::before {
             /* content: "hello, world!"; */
         }
-        article div.mytext {
-            /* flex: 2; */
-            max-width: 400px;
-            margin: 1em;
-        }
-        article aside {
+        section div.mytext {
             flex: 1;
-            max-width: 400px;
+            max-width: 390px;
+            min-width: 200px;
+            /* margin: 1em; */
+        }
+        section aside {
+            flex: 1;
+            max-width: 390px;
+            min-width: 250px;
         }
     </style>
   </head>
@@ -188,9 +191,9 @@
 
         <div id="intro">
 
-        <article id="ryou">
+        <section id="ryou">
             <div class="mytext">
-                <h2> <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt=""> you experienced in...  </h2>
+                <h2>R you experienced in</h2>
                 <p>
                     <ul>
                         <li>functional programming?</li>
@@ -204,12 +207,12 @@
                 <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
             </div>
             <aside>
-                <img src="{{ site.baseurl }}/assets/jimi-job-interview.jpg"
+                <img src="{{ site.baseurl }}/assets/R_logo.svg" 
                      width="400px" alt="">
             </aside>
-        </article>
+        </section>
 
-        <article id="about">
+        <section id="about">
             <div class="mytext">
         <h2>About me</h2>
         <p>
@@ -223,14 +226,13 @@
         </p>
             </div>
             <aside>
-                <img src="{{ site.baseurl }}/assets/explain-rll-wireframe-1.png"
-                     height="400px" alt="">
+                <img src="{{ site.baseurl }}/assets/explain-rll-wireframe-1.png" alt="">
             </aside>
-        </article>
+        </section>
         
         </div>
 
-        <article id="articles">
+        <section id="articles">
         <h2>Articles</h2>
 
             <div class="outer-container" style="">
@@ -251,7 +253,7 @@
                 </a>
                 {% endfor %}
             </div>
-        </article>
+        </section>
     
         </main>
     </div>
