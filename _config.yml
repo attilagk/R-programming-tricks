@@ -9,7 +9,7 @@
 title: R you experienced?
 email: attila.gulyas.kovacs@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-    A blog on programming techniques and statistical modeling using the R language
+    A blog on programming and data analysis with R
 baseurl: "/R-you-experienced" # the subpath of your site, e.g. /blog
 url: "https://attilagk.github.io" # the base hostname & protocol for your site
 github_username:  attilagk

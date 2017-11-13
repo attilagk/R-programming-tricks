@@ -74,11 +74,11 @@
             margin: 0 auto;
         }
         header.myheader {
-            position: fixed;
-            padding: 0px 0px 0px 0px;
-            height: 120px;
-            width: 100%;
-            max-width: none;
+            /* position: static; */
+            /* padding: 0px 0px 0px 0px; */
+            /* height: 140px; */
+            /* width: 100%; */
+            /* max-width: none; */
         }
         header h1 {
             /* text-align: center; */
@@ -114,24 +114,40 @@
         }
         main {
         }
+        #intro {
+            display: flex;
+            flex-wrap: wrap;
+        }
         article {
             /* border: 1em solid rgba(0,0,0,0.0); */
             /* padding-top: 3em; */
-            padding-top: 140px;
             display: flex;
         }
-        article#content {
+        div#intro > article {
+            max-width: 800px;
+            flex: 1 300px;
+            display: flex;
+            flex-wrap: wrap;
+            background-color: white;
+            margin: 1em;
+            margin-top: 190px;
+            justify-content: space-around;
+        }
+        article#articles {
             display: block;
+            margin-top: 190px;
         }
         article::before {
             /* content: "hello, world!"; */
         }
         article div.mytext {
-            flex: 2;
-            max-width: 800px;
+            /* flex: 2; */
+            max-width: 400px;
+            margin: 1em;
         }
         article aside {
             flex: 1;
+            max-width: 400px;
         }
     </style>
   </head>
@@ -140,15 +156,16 @@
     <div class="home">
     
         <header class="myheader">
-            <h1 class="page-heading">{{ site.title }}</h1>
-            <p>A blog on programming and data analysis with R</p>
-            <nav class="mynav">
+            <h1 class="page-heading">{{ site.title | default: site.github.repository_name }}</h1>
+            <p>{{ site.description }}</p>
+            <!-- <p>A blog on programming and data analysis with R</p> -->
+            <!-- <nav class="mynav">
                 <ul>
                     <li>
-                    <a href="{{ site.baseurl }}/#home">Home</a>
+                    <a href="{{ site.baseurl }}/#ryou">R you?</a>
                     </li>
                     <li>
-                    <a href="{{ site.baseurl }}/#content">Content</a>
+                    <a href="{{ site.baseurl }}/#articles">Articles</a>
                     </li>
                     <li>
                     <a href="{{ site.baseurl }}/#about">About me</a>
@@ -157,22 +174,21 @@
                         <a href="http://github.com/{{ site.github_username }}{{ site.baseurl }}">GitHub</a>
                     </li>
                 </ul>
-            </nav>
+            </nav> -->
         </header>
 
-        <!-- <div id="banner">
+        <div id="banner">
             <span id="logo"></span>
 
-            <a
-                  href="http://github.com/attilagk/R-you-experienced"
-                  class="button fork"><strong>View On
-                      GitHub</strong></a>
+            <a href="http://github.com/attilagk/R-you-experienced" class="button fork"><strong>View On GitHub</strong></a>
 
-        </div> --><!-- end banner -->
+        </div>
 
         <main>
 
-        <article id="home">
+        <div id="intro">
+
+        <article id="ryou">
             <div class="mytext">
                 <h2> <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt=""> you experienced in...  </h2>
                 <p>
@@ -189,12 +205,33 @@
             </div>
             <aside>
                 <img src="{{ site.baseurl }}/assets/jimi-job-interview.jpg"
-                     height="400px" alt="">
+                     width="400px" alt="">
             </aside>
         </article>
 
-        <article id="content">
-        <h2>Content</h2>
+        <article id="about">
+            <div class="mytext">
+        <h2>About me</h2>
+        <p>
+            My name is Attila Gulyás-Kovács, pronounced as
+            <a href="https://forvo.com/search/Attila%20Guly%c3%a1s-Kov%c3%a1cs/">[ˈɒtilɒ ˈgujaːʃ ˈkovaːt͡ʃ]</a>.
+            I'm a postdoctoral researcher in statistical genetics at Mount
+            Sinai School of Medicine, New York.  In my free time I learn and develop web
+            technologies and tools, often in a team of friends called Lazy8.
+            You can find out more about me from <a href="https://www.linkedin.com/in/attilagk/">my LinkedIn
+            profile</a>.
+        </p>
+            </div>
+            <aside>
+                <img src="{{ site.baseurl }}/assets/explain-rll-wireframe-1.png"
+                     height="400px" alt="">
+            </aside>
+        </article>
+        
+        </div>
+
+        <article id="articles">
+        <h2>Articles</h2>
 
             <div class="outer-container" style="">
                 {% for post in site.posts %}
@@ -216,25 +253,6 @@
             </div>
         </article>
     
-        <article id="about">
-            <div class="mytext">
-        <h2>About me</h2>
-        <p>
-            My name is Attila Gulyás-Kovács, pronounced as
-            <a href="https://forvo.com/search/Attila%20Guly%c3%a1s-Kov%c3%a1cs/">[ˈɒtilɒ ˈgujaːʃ ˈkovaːt͡ʃ]</a>.
-            I'm a postdoctoral researcher in statistical genetics at Mount
-            Sinai School of Medicine, New York.  In my free time I learn and develop web
-            technologies and tools, often in a team of friends called Lazy8.
-            You can find out more about me from <a href="https://www.linkedin.com/in/attilagk/">my LinkedIn
-            profile</a>.
-        </p>
-            </div>
-            <aside>
-                <img src="{{ site.baseurl }}/assets/explain-rll-wireframe-1.png"
-                     height="400px" alt="">
-            </aside>
-        </article>
-        
         </main>
     </div>
 </body></html>
