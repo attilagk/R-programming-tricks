@@ -12,6 +12,7 @@
     <link rel="stylesheet" type="text/css" media="screen" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
 
     <title>{{ site.title | default: site.github.repository_name }}</title>
+
     <style>
         .inner {
             max-width: 100%;
@@ -56,10 +57,97 @@
             opacity: 0.1;
             transition: opacity 0.5s;
         }
+        .inner-container-2 .excerpt > img {
+            opacity: 1;
+        }
         .inner-container-2 .excerpt:hover {
             opacity: 1;
             background-color: rgba(255,255,255,0.9);
             transition: opacity 0.5s;
+        }
+        .home {
+        }
+        body {
+            min-width: 400px;
+            /* max-width: 1200px; */
+            width: 90%;
+            margin: 0 auto;
+        }
+        header.myheader {
+            /* position: static; */
+            /* padding: 0px 0px 0px 0px; */
+            /* height: 140px; */
+            /* width: 100%; */
+            /* max-width: none; */
+        }
+        header h1 {
+            /* text-align: center; */
+        }
+        nav.mynav {
+            position: relative;
+            top: 0;
+            /* color: white; */
+            /* text-shadow: 0px 2px 0px #235796; */
+            flex: 100%;
+            display: flex;
+            width: 90%;
+            margin: auto;
+            left: 0;
+        }
+        nav.mynav ul {
+            margin: 0 auto;
+            list-style-type: none;
+            display: flex;
+            padding: 0;
+            width: 70%;
+            margin-top: 20px;
+        }
+        nav.mynav ul li {
+            display: inline;
+            flex: 1;
+            text-align: center;
+            background-color: rgb(0,0,0,0.1);
+            margin: 0px 1em;
+        }
+        nav.mynav ul a {
+            color: white;
+        }
+        main {
+        }
+        #intro {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        article {
+            /* border: 1em solid rgba(0,0,0,0.0); */
+            /* padding-top: 3em; */
+            display: flex;
+        }
+        div#intro > article {
+            max-width: 800px;
+            flex: 1 300px;
+            display: flex;
+            flex-wrap: wrap;
+            background-color: white;
+            margin: 1em;
+            margin-top: 190px;
+            justify-content: space-around;
+        }
+        article#articles {
+            display: block;
+            margin-top: 190px;
+        }
+        article::before {
+            /* content: "hello, world!"; */
+        }
+        article div.mytext {
+            /* flex: 2; */
+            max-width: 400px;
+            margin: 1em;
+        }
+        article aside {
+            flex: 1;
+            max-width: 400px;
         }
     </style>
   </head>
@@ -67,27 +155,104 @@
     
     <div class="home">
     
-        <h1 class="page-heading">{{ site.title }}</h1>
+        <header class="myheader">
+            <h1 class="page-heading">{{ site.title | default: site.github.repository_name }}</h1>
+            <p>{{ site.description }}</p>
+            <!-- <p>A blog on programming and data analysis with R</p> -->
+            <!-- <nav class="mynav">
+                <ul>
+                    <li>
+                    <a href="{{ site.baseurl }}/#ryou">R you?</a>
+                    </li>
+                    <li>
+                    <a href="{{ site.baseurl }}/#articles">Articles</a>
+                    </li>
+                    <li>
+                    <a href="{{ site.baseurl }}/#about">About me</a>
+                    </li>
+                    <li>
+                        <a href="http://github.com/{{ site.github_username }}{{ site.baseurl }}">GitHub</a>
+                    </li>
+                </ul>
+            </nav> -->
+        </header>
+
+        <div id="banner">
+            <span id="logo"></span>
+
+            <a href="http://github.com/attilagk/R-you-experienced" class="button fork"><strong>View On GitHub</strong></a>
+
+        </div>
+
+        <main>
+
+        <div id="intro">
+
+        <article id="ryou">
+            <div class="mytext">
+                <h2> <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt=""> you experienced in...  </h2>
+                <p>
+                    <ul>
+                        <li>functional programming?</li>
+                        <li>different evaluation modes of R expressions?</li>
+                        <li>representing mathematical objects with R objects?</li>
+                        <li>fitting and interpreting various models?</li>
+                    </ul>
+                    Simply put: are you experienced in R?
+                </p>
+                <p>This blog aims to help both you and me to answer with a "yes".</p>
+                <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+            </div>
+            <aside>
+                <img src="{{ site.baseurl }}/assets/jimi-job-interview.jpg"
+                     width="400px" alt="">
+            </aside>
+        </article>
+
+        <article id="about">
+            <div class="mytext">
+        <h2>About me</h2>
+        <p>
+            My name is Attila Gulyás-Kovács, pronounced as
+            <a href="https://forvo.com/search/Attila%20Guly%c3%a1s-Kov%c3%a1cs/">[ˈɒtilɒ ˈgujaːʃ ˈkovaːt͡ʃ]</a>.
+            I'm a postdoctoral researcher in statistical genetics at Mount
+            Sinai School of Medicine, New York.  In my free time I learn and develop web
+            technologies and tools, often in a team of friends called Lazy8.
+            You can find out more about me from <a href="https://www.linkedin.com/in/attilagk/">my LinkedIn
+            profile</a>.
+        </p>
+            </div>
+            <aside>
+                <img src="{{ site.baseurl }}/assets/explain-rll-wireframe-1.png"
+                     height="400px" alt="">
+            </aside>
+        </article>
+        
+        </div>
+
+        <article id="articles">
+        <h2>Articles</h2>
+
+            <div class="outer-container" style="">
+                {% for post in site.posts %}
+
+                <a class="inner-container" href="{{ post.url | prepend: site.baseurl }}" style="">
+                    <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
+
+                    <h3 class="post-title"> {{ post.title }} </h3>
+                    <p>{{ post.date | date: "%b %d, %Y" }}</p>
+                    <div class="inner-container-2">
+                        <img src="{{ site.baseurl }}/R{{ post.url | remove: '.html' }}/figure/{{ post.featimg }}" alt="">
+                        <div class="excerpt">
+                            <img src="{{ site.baseurl }}/assets/R_logo.svg" height="40" alt="">
+                            <p>{{ post.excerpt }} </p>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </article>
     
-      <div class="outer-container" style="">
-          {% for post in site.posts %}
-    
-          <a class="inner-container" href="{{ post.url | prepend: site.baseurl }}" style="">
-              <!-- <h2> <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a> </h2> -->
-              
-              <h3 class="post-title"> {{ post.title }} </h3>
-              <p>{{ post.date | date: "%b %d, %Y" }}</p>
-              <div class="inner-container-2">
-                  <img src="{{ site.baseurl }}/R{{ post.url | remove: '.html' }}/figure/{{ post.featimg }}" alt="">
-                  <div class="excerpt">
-                      <p>{{ post.excerpt }} </p>
-                  </div>
-              </div>
-              </a>
-          {% endfor %}
-      </div>
-    
-      <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
-    
+        </main>
     </div>
 </body></html>
