@@ -54,7 +54,7 @@ Fitting
 subjects <- levels(sleepstudy$Subject)
 names(subjects) <- subjects
 M <- list()
-M$fixed <-
+M$M1 <-
     lapply(subjects,
            function(s) {
                df <- subset(sleepstudy, Subject == s)
@@ -86,53 +86,58 @@ What would reaction time be for each person after 14 or 21 days of sleep depriva
 days <- c(14, 21)
 names(days) <- paste0("day.", days)
 pred <- list()
-pred$fixed <- t(sapply(M$fixed, predict, data.frame(Days = days)))
-dotplot(pred$fixed, auto.key = TRUE, xlab = "predicted reaction time", ylab = "subject")
+pred$M1 <- t(sapply(M$M1, predict, data.frame(Days = days)))
+dotplot(pred$M1, auto.key = TRUE, xlab = "predicted reaction time", ylab = "subject")
 ```
 
 <img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/lm-pred-1.png" title="plot of chunk lm-pred" alt="plot of chunk lm-pred" width="700px" />
 
 ## Mixed models
 
+Fit models.
+
 
 ```r
-M1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 M2 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-df <- cbind(sleepstudy, data.frame(yhat.M1 = predict(M1), yhat.M2 = predict(M2)))
+M3 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 ```
 
-The magenta lines represent the fitted line under `M1`, the green lines under `M2` (the observed data remain cyan).
+
+```r
+# Units are indexed from 1 to be general; they replace Subjects
+df <- cbind(sleepstudy,
+            data.frame(Unit = sleepstudy$Subject,
+                       yhat.M1 = unlist(lapply(M$M1, predict)),
+                       yhat.M2 = predict(M2),
+                       yhat.M3 = predict(M3)))
+levels(df$Unit) <- seq_along(levels(df$Unit))
+names(df) <- sub("Days", "X", names(df))
+df.long <- reshape(df, varying = varying <- c("Reaction", "yhat.M1", "yhat.M2", "yhat.M3"), v.names = "Y", timevar = "Type", direction = "long", times = varying)
+df.long$Type <- factor(df.long$Type)
+levels(df.long$Type) <- c("data", "M1", "M2", "M3")
+```
+
+The TODO lines represent the fitted line under `M3`, the TODO lines under `M2` (the observed data remain cyan).
 
 
 ```r
-xyplot(Reaction + yhat.M1 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
-       auto.key = list(text = c("observed", "predicted by M1"), points = FALSE, lines = TRUE))
+xyplot(Y ~ X | Unit, data = df.long, groups = Type, type = c("p", "l"), subset = Type %in% c("data", "M1"), distribute.type = TRUE)
 ```
 
 <img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-M1-1.png" title="plot of chunk observed-predicted-M1" alt="plot of chunk observed-predicted-M1" width="700px" />
 
 
 ```r
-xyplot(Reaction + yhat.M2 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
-       auto.key = list(text = c("observed", "predicted by M2"), points = FALSE, lines = TRUE))
+xyplot(Y ~ X | Unit, data = df.long, groups = Type, type = c("p", "l", "l", "l"), distribute.type = TRUE)
 ```
 
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-M2-1.png" title="plot of chunk observed-predicted-M2" alt="plot of chunk observed-predicted-M2" width="700px" />
-
-
-```r
-df <- cbind(sleepstudy, data.frame(yhat.M1 = predict(M1), yhat.M2 = predict(M2)))
-xyplot(Reaction + yhat.M1 + yhat.M2 ~ Days | Subject, data = df, type = "l", ylab = "Reaction", layout = c(6, 3),
-       auto.key = list(text = c("observed", "predicted by M1", "predicted by M2"), points = FALSE, lines = TRUE))
-```
-
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-1.png" title="plot of chunk observed-predicted" alt="plot of chunk observed-predicted" width="700px" />
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-M1-M2-M3-1.png" title="plot of chunk observed-predicted-M1-M2-M3" alt="plot of chunk observed-predicted-M1-M2-M3" width="700px" />
 
 ## Inference
 
 
 ```r
-t(sapply(M$fixed, function(m) summary(m)$coefficients[2, c(1, 4)]))
+t(sapply(M$M1, function(m) summary(m)$coefficients[2, c(1, 4)]))
 ```
 
 ```
@@ -159,7 +164,9 @@ t(sapply(M$fixed, function(m) summary(m)$coefficients[2, c(1, 4)]))
 
 ### Models
 
-We consider two models, $$M1$$ and $$M2$$.  These are nested: $$M1 \supset M2$$, meaning that $$M1$$ is more general while $$M2$$ is a constrained version of $$M1$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\mu$$.  Moreover, both models also account for the subject-specific variation about $$\mu$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$g = 1,...,G$$.  However, only $$M1$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_G$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_G$$.
+TODO
+
+We consider two models, $$M2$$ and $$M3$$.  These are nested: $$M3 \supset M2$$, meaning that $$M3$$ is more general while $$M2$$ is a constrained version of $$M3$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\mu$$.  Moreover, both models also account for the subject-specific variation about $$\mu$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$g = 1,...,G$$.  However, only $$M3$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_G$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_G$$.
 
 After the above qualitative description we specify the models qualitatively.  Both models share the following form and properties:
 $$
@@ -169,12 +176,12 @@ y_{gi} &=& \mu + x_i (\beta + \gamma_g) + \delta_g + \varepsilon_{gi} \\\\
 \varepsilon_{gi} &\sim& \mathcal{N}(0, \sigma^2).
 \end{eqnarray*}
 $$
-In addition, $$\beta$$ is an unknown fixed parameter both in $$M1$$ and $$M2$$.
+In addition, $$\beta$$ is an unknown fixed parameter both in $$M2$$ and $$M3$$.
 
-The only difference between $$M1$$ and $$M2$$ is $$\gamma \equiv (\gamma_1, ..., \gamma_G)$$; in $$M1$$ it is allowed to vary randomly while in $$M2$$ it is constrained to be 0:
+The only difference between $$M2$$ and $$M3$$ is $$\gamma \equiv (\gamma_1, ..., \gamma_G)$$; in $$M3$$ it is allowed to vary randomly while in $$M2$$ it is constrained to be 0:
 $$
 \begin{eqnarray*}
-M1: \; \gamma &\sim& \mathcal{N}(0, \Omega_\gamma) \\\\
+M3: \; \gamma &\sim& \mathcal{N}(0, \Omega_\gamma) \\\\
 M2: \; \gamma &=& 0
 \end{eqnarray*}
 $$
@@ -188,11 +195,11 @@ H_0 : \; \gamma_1\neq...\neq\gamma_G.
 \end{equation*}
 $$
 
-The most powerful test for $$H_0$$ is the likelihood ratio test comparing the `M1` model to its constrained version `M2`:
+The most powerful test for $$H_0$$ is the likelihood ratio test comparing the `M3` model to its constrained version `M2`:
 
 
 ```r
-anova(M1, M2)
+anova(M3, M2)
 ```
 
 ```
@@ -203,10 +210,10 @@ anova(M1, M2)
 ## Data: sleepstudy
 ## Models:
 ## M2: Reaction ~ Days + (1 | Subject)
-## M1: Reaction ~ Days + (Days | Subject)
+## M3: Reaction ~ Days + (Days | Subject)
 ##    Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)    
 ## M2  4 1802.1 1814.8 -897.04   1794.1                             
-## M1  6 1763.9 1783.1 -875.97   1751.9 42.139      2  7.072e-10 ***
+## M3  6 1763.9 1783.1 -875.97   1751.9 42.139      2  7.072e-10 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
