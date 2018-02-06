@@ -8,11 +8,24 @@ featimg: "observed-only-1.png"
 
 Fixed and mixed models are fitted to the sleepstudy dataset to investigate how human reaction slows down with sleep deprivation.
 
-## Data
+## Sleep study
 
-The `sleepstudy` dataset from the `lme4` package is chosen for the demonstration.  Below is the description of `sleepstudy`
+A sleep study was carried out to investigate whether and how reaction time slows down with sleep deprivation.  The corresponding `sleepstudy` dataset is part of the `lme4` package; below is the description of `sleepstudy`:
 
 >The average reaction time per day for subjects in a sleep deprivation study. On day 0 the subjects had their normal amount of sleep. Starting that night they were restricted to 3 hours of sleep per night. The observations represent the average reaction time on a series of tests given each day to each subject. 
+
+This data set is ideal to compare fixed and mixed effects models.  The outline of this article is as follows:
+
+1. inspect the data
+1. mathematical description and fitting of models
+   1. M1, a fixed effects model
+   1. M2 and M3, two mixed models
+1. fitting the models
+1. statistical inference (using M1, M2, M3)
+
+## Inspecting the data
+
+First some prerequisites...
 
 
 ```r
@@ -36,7 +49,7 @@ opts_chunk$set(out.width = "700px")
 opts_chunk$set(dev = c("png", "pdf"))
 ```
 
-Plotting the average reaction time against the test day for each subject...
+Now let's plot the average reaction time against the test day for each subject!
 
 
 ```r
@@ -45,9 +58,46 @@ xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3))
 
 <img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-only-1.png" title="plot of chunk observed-only" alt="plot of chunk observed-only" width="700px" />
 
-## Fixed models
+The plot shows that subjects vary with respect to...
 
-Fitting
+1. their initial reaction time (at day 0)
+1. how their reaction time changes systematically with days
+1. how scattered the data points are (noise, non-systematic variation)
+
+But the plot also reveals common patterns shared by the subjects: for most of them the reaction time is initially $$\approx 250$$ milliseconds but this value tends to rise systematically with days suggesting that sleep deprivation slows down reaction.
+
+We seek models that are able to capture as much of the varying and shared patterns noted above as possible.  We'll evaluate that ability in terms of how well each model fits the data.  Then we will use the models to test if the dependence of reaction time indeed varies across subjects and whether in a typical or average subject that dependence is indeed positive, as the scatter plot above suggests.
+
+## Mathematical description of models
+
+### M1, a fixed effects model
+
+### M2 and M3, two mixed models
+
+We consider two mixed models, $$M2$$ and $$M3$$.  These are nested: $$M3 \supset M2$$, meaning that $$M3$$ is more general while $$M2$$ is a constrained version of $$M3$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\mu$$.  Moreover, both models also account for the subject-specific variation about $$\mu$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$u = 1,...,U$$.  However, only $$M3$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_U$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_U$$.  Thus, in $$M3$$ the slope is random while in $$M2$$ it is fixed.
+
+After the above qualitative description we specify the models qualitatively.  Both models share the following form and properties:
+$$
+\begin{eqnarray*}
+y_{ui} &=& \mu + x_i (\beta + \gamma_g) + \delta_g + \varepsilon_{ui} \\\\
+\delta \equiv (\delta_1, ..., \delta_U) &\sim& \mathcal{N}(0, \Omega_\delta) \\\\
+\varepsilon_{ui} &\sim& \mathcal{N}(0, \sigma^2).
+\end{eqnarray*}
+$$
+
+In addition, $$\beta$$ is an unknown fixed parameter both in $$M2$$ and $$M3$$.
+
+The only difference between $$M2$$ and $$M3$$ is $$\gamma \equiv (\gamma_1, ..., \gamma_U)$$; in $$M3$$ it is allowed to vary randomly while in $$M2$$ it is constrained to be 0:
+$$
+\begin{eqnarray*}
+M3: \; \gamma &\sim& \mathcal{N}(0, \Omega_\gamma) \\\\
+M2: \; \gamma &=& 0
+\end{eqnarray*}
+$$
+
+## Fitting the models
+
+The `stats` package provides the `lm` function for fitting (normal, linear) fixed effects models.  Our fixed model M1 is the set of all such (sub)models, each fitted to a different subject/unit.
 
 
 ```r
@@ -62,18 +112,58 @@ M$M1 <-
            })
 ```
 
-Plotting fitted curves along with data
+
+```r
+M$M2 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
+M$M3 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+```
 
 
 ```r
-xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3),
-       panel = function(x, y) {
-           panel.xyplot(x, y)
-           panel.lmline(x, y)
-       })
+# Units are indexed from 1 to be general; they replace Subjects
+df <- cbind(sleepstudy,
+            data.frame(Unit = sleepstudy$Subject,
+                       yhat.M1 = unlist(lapply(M$M1, predict)),
+                       yhat.M2 = predict(M$M2),
+                       yhat.M3 = predict(M$M3)))
+levels(df$Unit) <- seq_along(levels(df$Unit))
+names(df) <- sub("Days", "X", names(df))
+df.long <- reshape(df, varying = varying <- c("Reaction", "yhat.M1", "yhat.M2", "yhat.M3"), v.names = "Y", timevar = "Type", direction = "long", times = varying)
+df.long$Type <- factor(df.long$Type)
+levels(df.long$Type) <- c("data", "M1", "M2", "M3")
 ```
 
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-lm-1.png" title="plot of chunk observed-lm" alt="plot of chunk observed-lm" width="700px" />
+The TODO lines represent the fitted line under `M3`, the TODO lines under `M2` (the observed data remain cyan).
+
+
+```r
+xyplot(Y ~ X | Unit, data = df.long, groups = Type, type = c("p", "l", "l", "l"), subset = Type %in% c("data", "M1"), distribute.type = TRUE)
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/data-M1-1.png" title="plot of chunk data-M1" alt="plot of chunk data-M1" width="700px" />
+
+
+```r
+xyplot(Y ~ X | Unit, data = df.long, groups = Type, type = c("p", "l", "l", "l"), subset = Type %in% c("data", "M2"), distribute.type = TRUE)
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/data-M2-1.png" title="plot of chunk data-M2" alt="plot of chunk data-M2" width="700px" />
+
+
+```r
+xyplot(Y ~ X | Unit, data = df.long, groups = Type, type = c("p", "l", "l", "l"), subset = Type %in% c("data", "M3"), distribute.type = TRUE)
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/data-M3-1.png" title="plot of chunk data-M3" alt="plot of chunk data-M3" width="700px" />
+
+
+```r
+xyplot(Y ~ X | Unit, data = df.long, groups = Type, type = c("p", "l", "l", "l"), distribute.type = TRUE)
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/data-M1-M2-M3-1.png" title="plot of chunk data-M1-M2-M3" alt="plot of chunk data-M1-M2-M3" width="700px" />
+
+## Statistical inference (using M1, M2, M3)
 
 ### Prediction
 
@@ -95,43 +185,6 @@ dotplot(pred$M1, auto.key = TRUE, xlab = "predicted reaction time", ylab = "subj
 ## Mixed models
 
 Fit models.
-
-
-```r
-M2 <- lmer(Reaction ~ Days + (1 | Subject), sleepstudy)
-M3 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-```
-
-
-```r
-# Units are indexed from 1 to be general; they replace Subjects
-df <- cbind(sleepstudy,
-            data.frame(Unit = sleepstudy$Subject,
-                       yhat.M1 = unlist(lapply(M$M1, predict)),
-                       yhat.M2 = predict(M2),
-                       yhat.M3 = predict(M3)))
-levels(df$Unit) <- seq_along(levels(df$Unit))
-names(df) <- sub("Days", "X", names(df))
-df.long <- reshape(df, varying = varying <- c("Reaction", "yhat.M1", "yhat.M2", "yhat.M3"), v.names = "Y", timevar = "Type", direction = "long", times = varying)
-df.long$Type <- factor(df.long$Type)
-levels(df.long$Type) <- c("data", "M1", "M2", "M3")
-```
-
-The TODO lines represent the fitted line under `M3`, the TODO lines under `M2` (the observed data remain cyan).
-
-
-```r
-xyplot(Y ~ X | Unit, data = df.long, groups = Type, type = c("p", "l"), subset = Type %in% c("data", "M1"), distribute.type = TRUE)
-```
-
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-M1-1.png" title="plot of chunk observed-predicted-M1" alt="plot of chunk observed-predicted-M1" width="700px" />
-
-
-```r
-xyplot(Y ~ X | Unit, data = df.long, groups = Type, type = c("p", "l", "l", "l"), distribute.type = TRUE)
-```
-
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/observed-predicted-M1-M2-M3-1.png" title="plot of chunk observed-predicted-M1-M2-M3" alt="plot of chunk observed-predicted-M1-M2-M3" width="700px" />
 
 ## Inference
 
@@ -162,30 +215,6 @@ t(sapply(M$M1, function(m) summary(m)$coefficients[2, c(1, 4)]))
 ## 372 11.298073 1.716323e-05
 ```
 
-### Models
-
-TODO
-
-We consider two models, $$M2$$ and $$M3$$.  These are nested: $$M3 \supset M2$$, meaning that $$M3$$ is more general while $$M2$$ is a constrained version of $$M3$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\mu$$.  Moreover, both models also account for the subject-specific variation about $$\mu$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$g = 1,...,G$$.  However, only $$M3$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_G$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_G$$.
-
-After the above qualitative description we specify the models qualitatively.  Both models share the following form and properties:
-$$
-\begin{eqnarray*}
-y_{gi} &=& \mu + x_i (\beta + \gamma_g) + \delta_g + \varepsilon_{gi} \\\\
-\delta \equiv (\delta_1, ..., \delta_G) &\sim& \mathcal{N}(0, \Omega_\delta) \\\\
-\varepsilon_{gi} &\sim& \mathcal{N}(0, \sigma^2).
-\end{eqnarray*}
-$$
-In addition, $$\beta$$ is an unknown fixed parameter both in $$M2$$ and $$M3$$.
-
-The only difference between $$M2$$ and $$M3$$ is $$\gamma \equiv (\gamma_1, ..., \gamma_G)$$; in $$M3$$ it is allowed to vary randomly while in $$M2$$ it is constrained to be 0:
-$$
-\begin{eqnarray*}
-M3: \; \gamma &\sim& \mathcal{N}(0, \Omega_\gamma) \\\\
-M2: \; \gamma &=& 0
-\end{eqnarray*}
-$$
-
 ### Hypothesis testing
 
 Does the dependence on days really vary across subjects or are subjects identical with respect to the dependence?  We take the latter possibility as the null hypothesis
@@ -203,19 +232,7 @@ anova(M3, M2)
 ```
 
 ```
-## refitting model(s) with ML (instead of REML)
-```
-
-```
-## Data: sleepstudy
-## Models:
-## M2: Reaction ~ Days + (1 | Subject)
-## M3: Reaction ~ Days + (Days | Subject)
-##    Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)    
-## M2  4 1802.1 1814.8 -897.04   1794.1                             
-## M3  6 1763.9 1783.1 -875.97   1751.9 42.139      2  7.072e-10 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## Error in anova(M3, M2): object 'M3' not found
 ```
 
 Thus we may reject $$H_0$$ at significance level $$<10^{-9}$$ and conclude that the data supports overwhelmingly better the alternative hypothesis that the dependence of `Reaction` on `Days` varies across `Subject`s.
