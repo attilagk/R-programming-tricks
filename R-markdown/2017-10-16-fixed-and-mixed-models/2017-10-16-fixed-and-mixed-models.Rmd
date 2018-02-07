@@ -55,18 +55,32 @@ We seek models that are able to capture as much of the varying and shared patter
 
 ## Mathematical description of models
 
+Before plunging into model descriptions it helps to make some considerations about notation.  We'll index the 18 subjects with $$g=1,...,G$$, where $$G=18$$ in case of the sleep study.  Observations are indexed with $$i$$.  Data points for the response (reaction time) and the explanatory variable (days of sleep deprivation) are denoted as $$y_{gi}$$ and $$x_{gi}$$, respectively.  The noise is denoted as $$\varepsilon_{gi}$$.  Any other greek letter ($$\beta, \gamma, \delta, \mu$$) denote regression coefficients.
+
 ### M1, a fixed effects model
+
+This is the familiar normal linear model for each subject $$g$$.
+
+$$
+\begin{eqnarray*}
+y_{gi} &=& \mu_g + x_i \beta_g + \varepsilon_{gi} \\\\
+\varepsilon_{gi} &\sim& \mathcal{N}(0, \sigma_g^2).
+\end{eqnarray*}
+$$
+
+Thus $$M1$$ is a set of such models that are isolated from each other in the sense that they share no parameters or data.
 
 ### M2 and M3, two mixed models
 
-We consider two mixed models, $$M2$$ and $$M3$$.  These are nested: $$M3 \supset M2$$, meaning that $$M3$$ is more general while $$M2$$ is a constrained version of $$M3$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\mu$$.  Moreover, both models also account for the subject-specific variation about $$\mu$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$u = 1,...,U$$.  However, only $$M3$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_U$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_U$$.  Thus, in $$M3$$ the slope is random while in $$M2$$ it is fixed.
+We consider two mixed models, $$M2$$ and $$M3$$.  These are nested: $$M3 \supset M2$$, meaning that $$M3$$ is more general while $$M2$$ is a constrained version of $$M3$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\mu$$.  Moreover, both models also account for the subject-specific variation about $$\mu$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$g = 1,...,G$$.  However, only $$M3$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_U$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_U$$.  Thus, in $$M3$$ the slope is random while in $$M2$$ it is fixed.
 
 After the above qualitative description we specify the models qualitatively.  Both models share the following form and properties:
+
 $$
 \begin{eqnarray*}
-y_{ui} &=& \mu + x_i (\beta + \gamma_g) + \delta_g + \varepsilon_{ui} \\\\
+y_{gi} &=& \mu + x_i (\beta + \gamma_g) + \delta_g + \varepsilon_{gi} \\\\
 \delta \equiv (\delta_1, ..., \delta_U) &\sim& \mathcal{N}(0, \Omega_\delta) \\\\
-\varepsilon_{ui} &\sim& \mathcal{N}(0, \sigma^2).
+\varepsilon_{gi} &\sim& \mathcal{N}(0, \sigma^2).
 \end{eqnarray*}
 $$
 
