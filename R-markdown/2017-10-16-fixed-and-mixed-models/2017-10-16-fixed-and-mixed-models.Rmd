@@ -55,7 +55,7 @@ We seek models that are able to capture as much of the varying and shared patter
 
 ## Mathematical description of models
 
-Before plunging into model descriptions it helps to make some considerations about notation.  We'll index the 18 subjects with $$g=1,...,G$$, where $$G=18$$ in case of the sleep study.  Observations are indexed with $$i$$.  Data points for the response (reaction time) and the explanatory variable (days of sleep deprivation) are denoted as $$y_{gi}$$ and $$x_{gi}$$, respectively.  The noise is denoted as $$\varepsilon_{gi}$$.  Any other greek letter ($$\beta, \gamma, \delta, \mu$$) denote regression coefficients.
+Before plunging into model descriptions it helps to make some considerations about notation.  We'll index the 18 subjects with $$g=1,...,G=18$$.  Observations are indexed with $$i$$.  Data points for the reaction time (the response variable) and days of sleep deprivation (the explanatory variable) are denoted as $$y_{gi}$$ and $$x_{gi}$$, respectively.  The noise is denoted as $$\varepsilon_{gi}$$.  Any other Greek letter ($$\beta, \gamma, \delta, \alpha$$) will denote regression coefficients.
 
 ### M1, a fixed effects model
 
@@ -63,7 +63,7 @@ This is the familiar normal linear model for each subject $$g$$.
 
 $$
 \begin{eqnarray*}
-y_{gi} &=& \mu_g + x_i \beta_g + \varepsilon_{gi} \\\\
+y_{gi} &=& \alpha_g + x_i \beta_g + \varepsilon_{gi} \\\\
 \varepsilon_{gi} &\sim& \mathcal{N}(0, \sigma_g^2).
 \end{eqnarray*}
 $$
@@ -72,25 +72,25 @@ Thus $$M1$$ is a set of such models that are isolated from each other in the sen
 
 ### M2 and M3, two mixed models
 
-We consider two mixed models, $$M2$$ and $$M3$$.  These are nested: $$M3 \supset M2$$, meaning that $$M3$$ is more general while $$M2$$ is a constrained version of $$M3$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\mu$$.  Moreover, both models also account for the subject-specific variation about $$\mu$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$g = 1,...,G$$.  However, only $$M3$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_U$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_U$$.  Thus, in $$M3$$ the slope is random while in $$M2$$ it is fixed.
+We consider two mixed models, $$M2$$ and $$M3$$.  These are nested: $$M3 \supset M2$$, meaning that $$M3$$ is more general while $$M2$$ is a constrained version of $$M3$$.  Both models account for two shared characteristics among subjects: the increasing tendency of reaction time with days, captured by parameter $$\beta$$, as well as the roughly $$300ms$$ day- and subject-averaged reaction time, $$\alpha$$.  Moreover, both models also account for the subject-specific variation about $$\alpha$$ by including a separate day-averaged reaction time parameter $$\delta_g$$ for each subject $$g = 1,...,G$$.  However, only $$M3$$ allows for subject-specific dependence of reaction time on days, which is expressed by parameters $$\gamma_1\neq...\neq\gamma_U$$.  In contrast, $$M2$$ assumes that subjects are identical in that respect so $$\gamma_1=...=\gamma_U$$.  Thus, in $$M3$$ the slope is random while in $$M2$$ it is fixed.
 
 After the above qualitative description we specify the models qualitatively.  Both models share the following form and properties:
 
 $$
 \begin{eqnarray*}
-y_{gi} &=& \mu + x_i (\beta + \gamma_g) + \delta_g + \varepsilon_{gi} \\\\
-\delta \equiv (\delta_1, ..., \delta_U) &\sim& \mathcal{N}(0, \Omega_\delta) \\\\
+y_{gi} &=& \alpha + a_g + x_i (\beta + b_g) + \varepsilon_{gi} \\\\
+a \equiv (a_1, ..., a_G) &\sim& \mathcal{N}(0, \Omega_a) \\\\
 \varepsilon_{gi} &\sim& \mathcal{N}(0, \sigma^2).
 \end{eqnarray*}
 $$
 
 In addition, $$\beta$$ is an unknown fixed parameter both in $$M2$$ and $$M3$$.
 
-The only difference between $$M2$$ and $$M3$$ is $$\gamma \equiv (\gamma_1, ..., \gamma_U)$$; in $$M3$$ it is allowed to vary randomly while in $$M2$$ it is constrained to be 0:
+The only difference between $$M2$$ and $$M3$$ is $$b \equiv (b_1, ..., b_U)$$; in $$M3$$ it is allowed to vary randomly while in $$M2$$ it is constrained to be 0:
 $$
 \begin{eqnarray*}
-M3: \; \gamma &\sim& \mathcal{N}(0, \Omega_\gamma) \\\\
-M2: \; \gamma &=& 0
+M3: \; b &\sim& \mathcal{N}(0, \Omega_b) \\\\
+M2: \; b &=& 0
 \end{eqnarray*}
 $$
 
