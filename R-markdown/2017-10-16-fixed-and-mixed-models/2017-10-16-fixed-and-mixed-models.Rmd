@@ -33,9 +33,11 @@ library(lattice)
 lattice.options(default.args = list(as.table = TRUE))
 lattice.options(default.theme = "standard.theme")
 opts_chunk$set(dpi = 144)
+opts_chunk$set(fig.width = 6)
+opts_chunk$set(fig.asp = 1)
 opts_chunk$set(out.width = "700px")
 opts_chunk$set(dev = c("png", "pdf"))
-tp <- list(superpose.line = list(col = c("black", "gray40", "red", "gray40", "darkgreen", "blue", trellis.par.get("superpose.line")$col[-1:-5])))
+tp <- list(superpose.line = list(col = c("black", "gray40", "red", "gray40", "green4", "blue", trellis.par.get("superpose.line")$col[-1:-5])))
 tp$superpose.symbol <- tp$superpose.line
 tp$plot.symbol <- tp$plot.symbol <- list(col = tp$superpose.line$col[1])
 ```
@@ -50,8 +52,8 @@ rbind(head(sleepstudy, 3), tail(sleepstudy, 3))
 
 Now let's plot the average reaction time against the test day for each subject!
 
-```{r observed-only}
-xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3), par.settings = tp)
+```{r data}
+xyplot(Reaction ~ Days | Subject, data = sleepstudy, layout = c(6, 3), par.settings = tp, auto.key = list(text = "sleep study", points = FALSE), ylim = c(175, 485))
 ```
 
 The plot shows that subjects vary with respect to...
@@ -159,33 +161,27 @@ levels(df.long$Type) <- c("data", "F0", "F1", "M0", "M1", "M2")
 
 The TODO lines represent the fitted line under `M2`, the TODO lines under `M1` (the observed data remain cyan).
 
-```{r data-F0}
-xyplot(Y ~ X | Subject, data = df.long, groups = Type, type = c("p", rep("l", 5)), subset = Type %in% c("data", "F0"), distribute.type = TRUE, par.settings = tp)
+```{r data-F0-F1}
+my.xyplot <- function (selection = c(2,3), dframe = df.long, tpar = tp)
+    xyplot(Y ~ X | Subject, data = dframe, groups = Type, type = c("p", rep("l", 5)), subset = Type %in% levels(Type)[c(1, selection)], distribute.type = TRUE, par.settings = tpar, auto.key = list(text = levels(dframe$Type)[selection], points = FALSE, lines = FALSE, columns = length(selection), col = tpar$superpose.line$col[selection]), layout = c(6, 3), ylim = c(175, 485))
+my.xyplot(c(2,3))
 ```
 
-```{r data-F1}
-xyplot(Y ~ X | Subject, data = df.long, groups = Type, type = c("p", rep("l", 5)), subset = Type %in% c("data", "F1"), distribute.type = TRUE, par.settings = tp)
+```{r data-M0-M1}
+my.xyplot(c(4:5))
 ```
 
-```{r data-M0}
-xyplot(Y ~ X | Subject, data = df.long, groups = Type, type = c("p", rep("l", 5)), subset = Type %in% c("data", "M0"), distribute.type = TRUE, par.settings = tp)
+```{r data-M0-M1-M2}
+my.xyplot(c(4:6))
 ```
 
-```{r data-M1}
-xyplot(Y ~ X | Subject, data = df.long, groups = Type, type = c("p", rep("l", 5)), subset = Type %in% c("data", "M1"), distribute.type = TRUE, par.settings = tp)
+```{r data-F1-M2}
+my.xyplot(c(3, 6))
 ```
 
-```{r data-M2}
-xyplot(Y ~ X | Subject, data = df.long, groups = Type, type = c("p", rep("l", 5)), subset = Type %in% c("data", "M2"), distribute.type = TRUE, par.settings = tp)
-```
+## Statistical inference using fixed and mixed models
 
-```{r data-F1-M1-M2}
-xyplot(Y ~ X | Subject, data = df.long, groups = Type, type = c("p", rep("l", 5)), subset = ! Type %in% c("F0", "M0"), distribute.type = TRUE, par.settings = tp)
-```
-
-## Statistical inference (using F1, M1, M2)
-
-### Hypothesis testing
+Several hypotheses appear relevant for `sleepstudy`: that reaction time and sleep deprivation are independent, that they are dependent invariably across subjects, or that the dependence varies across subjects.  Mathematically, a null hypothesis is a constraint on a parameter.  We will focus on the slope parameters of various models whether they mediate fixed effects ($$\{\beta_g\}_{g=1,...G}, \beta$$) or random effects($$\{b_g\}_{g=1,...,G}$$).  Thus to each null hypothesis corresponds a "null" model in which some of the slope parameters are constrained to zero.  This null model will be compared to a more general (less constrained) alternative model.   Note that the same model may play the role of both a null or an alternative model depending on which hypothesis we test.  Also recall that the most powerful test when the null model is nested in the alternative one is the likelihood ratio test.  The likelihood ratio test is known as ANOVA for the special case of regression models, such as ours.
 
 ```{r}
 H <- list()
@@ -207,16 +203,16 @@ H <- rbind(H,
                       ANOVA = "M0 vs M1",
                       par = "beta",
                       H0 = "beta = 0"),
-           data.frame(pval = anova(M$M0, M$M2)[2, "Pr(>Chisq)"],
-                      col = tp$superpose.line$col[6],
-                      ANOVA = "M0 vs M2",
-                      par = "beta, b",
-                      H0 = "beta = 0, b = 0"),
            data.frame(pval = anova(M$M1, M$M2)[2, "Pr(>Chisq)"],
                       col = tp$superpose.line$col[6],
                       ANOVA = "M1 vs M2",
-                      par = "b",
-                      H0 = "b = 0")
+                      par = "b_g",
+                      H0 = "{b_g = 0}_g"),
+           data.frame(pval = anova(M$M0, M$M2)[2, "Pr(>Chisq)"],
+                      col = tp$superpose.line$col[6],
+                      ANOVA = "M0 vs M2",
+                      par = "beta, {b_g}_g",
+                      H0 = "beta = 0, {b_g = 0}_g")
            )
 H$par <- factor(H$par, levels = rev(H$par), ordered = TRUE)
 H$H0 <- factor(H$H0, levels = rev(H$H0), ordered = TRUE)
@@ -225,51 +221,6 @@ H$H0 <- factor(H$H0, levels = rev(H$H0), ordered = TRUE)
 ```{r log-p-val}
 dotplot(H0 ~ log10(pval), data = H, par.settings = list(dot.symbol = list(col = as.character(H$col))))
 ```
-
-### Prediction
-
-```{r lm-obs-pred, eval=FALSE, echo=FALSE}
-dotplot(as.matrix(data.frame(observed = subset(sleepstudy, Days == 0, "Reaction", drop = TRUE),
-                             predicted = sapply(M$F1, function(m) summary(m)$coefficients[1, "Estimate", drop = FALSE]))),
-        auto.key = TRUE, xlab = "reaction time at day 0", ylab = "subject")
-```
-
-What would reaction time be for each person after 14 or 21 days of sleep deprivation?
-
-```{r lm-pred}
-days <- c(14, 21)
-names(days) <- paste0("day.", days)
-pred <- list()
-pred$F1 <- t(sapply(M$F1, predict, data.frame(Days = days)))
-dotplot(pred$F1, auto.key = TRUE, xlab = "predicted reaction time", ylab = "subject")
-```
-
-## Mixed models
-
-Fit models.
-
-## Inference
-
-```{r}
-t(sapply(M$F1, function(m) summary(m)$coefficients[2, c(1, 4)]))
-```
-
-### Hypothesis testing
-
-Does the dependence on days really vary across subjects or are subjects identical with respect to the dependence?  We take the latter possibility as the null hypothesis
-$$
-\begin{equation*}
-H_0 : \; \gamma_1\neq...\neq\gamma_G.
-\end{equation*}
-$$
-
-The most powerful test for $$H_0$$ is the likelihood ratio test comparing the `M2` model to its constrained version `M1`:
-
-```{r}
-anova(M2, M1)
-```
-
-Thus we may reject $$H_0$$ at significance level $$<10^{-9}$$ and conclude that the data supports overwhelmingly better the alternative hypothesis that the dependence of `Reaction` on `Days` varies across `Subject`s.
 
 ## Implications to our study
 
