@@ -256,7 +256,7 @@ H <- rbind(H,
            data.frame(pval = anova(M$M1, M$M2)[2, "Pr(>Chisq)"],
                       col = tp$superpose.line$col[6],
                       ANOVA = "M1 vs M2",
-                      par = "b_g",
+                      par = "{b_g}_g",
                       H0 = "{b_g = 0}_g"),
            data.frame(pval = anova(M$M0, M$M2)[2, "Pr(>Chisq)"],
                       col = tp$superpose.line$col[6],
@@ -273,13 +273,16 @@ H <- rbind(H,
 ```
 
 ```r
-H$par <- factor(H$par, levels = rev(H$par), ordered = TRUE)
-H$H0 <- factor(H$H0, levels = rev(H$H0), ordered = TRUE)
+H$par <- factor(H$par, levels = H$par, ordered = TRUE)
+H$H0 <- factor(H$H0, levels = H$H0, ordered = TRUE)
 ```
 
 
 ```r
-dotplot(H0 ~ log10(pval), data = H, par.settings = list(dot.symbol = list(col = as.character(H$col))))
+dotplot(par ~ log10(pval), data = H,
+        auto.key = list(text = rev(c("F1 vs F0: specific", "M1 vs M0: nonspecific", "M2 vs M1: specific", "M2 vs M0: specific and nonspecific")), col = rev(c("red", "green4", "blue", "black")), points = FALSE),
+        xlab = expression(paste(log[10], "p")),
+        par.settings = list(dot.symbol = list(col = c(as.character(H$col)[-length(H$col)], "black"))))
 ```
 
 <img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/log-p-val-1.png" title="plot of chunk log-p-val" alt="plot of chunk log-p-val" width="700px" />
