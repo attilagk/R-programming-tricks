@@ -3,7 +3,7 @@ layout: default
 title: Fixed and Mixed Regression Models
 tags: [ regression ]
 Rdir: "/R/2017-10-16-fixed-and-mixed-models/"
-featimg: "observed-only-1.png"
+featimg: "data-M0-M1-M2-1.png"
 ---
 
 Fixed and mixed models are fitted to the sleepstudy dataset to investigate how human reaction slows down with sleep deprivation.
