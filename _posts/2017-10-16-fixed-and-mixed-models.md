@@ -49,9 +49,10 @@ opts_chunk$set(fig.width = 6)
 opts_chunk$set(fig.asp = 1)
 opts_chunk$set(out.width = "700px")
 opts_chunk$set(dev = c("png", "pdf"))
-tp <- list(superpose.line = list(col = c("black", "gray40", "red", "gray40", "green4", "blue", trellis.par.get("superpose.line")$col[-1:-5])))
+tp <- list(superpose.line = list(col = c("black", "orange", "red", "brown", "green4", "blue", trellis.par.get("superpose.line")$col[-1:-5])))
 tp$superpose.symbol <- tp$superpose.line
 tp$plot.symbol <- tp$plot.symbol <- list(col = tp$superpose.line$col[1])
+source("2017-10-16-fixed-and-mixed-models.R")
 ```
 
 The human subjects of `sleepstudy` are numbered in a way that's a little inconvenient for our purposes, so let's simplify and renumber them from 1 to 18 and look at the first 3 and last 3 data points!
@@ -239,7 +240,7 @@ all.equal(H$pval,
 
 ```r
 H$col <- tp$superpose.line$col[3]
-H$ANOVA <- "F0 vs F1"
+H$ANOVA <- "F1 vs F0"
 H <- data.frame(H)
 H$par <- paste0("beta_", seq_along(H$pval))
 H$H0 <- paste0("beta_", seq_along(H$pval), " = 0")
@@ -250,17 +251,17 @@ H$H0 <- paste0("beta_", seq_along(H$pval), " = 0")
 H <- rbind(H,
            data.frame(pval = anova(M$M0, M$M1)[2, "Pr(>Chisq)"],
                       col = tp$superpose.line$col[5],
-                      ANOVA = "M0 vs M1",
+                      ANOVA = "M1 vs M0",
                       par = "beta",
                       H0 = "beta = 0"),
            data.frame(pval = anova(M$M1, M$M2)[2, "Pr(>Chisq)"],
                       col = tp$superpose.line$col[6],
-                      ANOVA = "M1 vs M2",
+                      ANOVA = "M2 vs M1",
                       par = "{b_g}_g",
                       H0 = "{b_g = 0}_g"),
            data.frame(pval = anova(M$M0, M$M2)[2, "Pr(>Chisq)"],
                       col = tp$superpose.line$col[6],
-                      ANOVA = "M0 vs M2",
+                      ANOVA = "M2 vs M0",
                       par = "beta, {b_g}_g",
                       H0 = "beta = 0, {b_g = 0}_g")
            )
@@ -279,13 +280,39 @@ H$H0 <- factor(H$H0, levels = H$H0, ordered = TRUE)
 
 
 ```r
-dotplot(par ~ log10(pval), data = H,
-        auto.key = list(text = rev(c("F1 vs F0: specific", "M1 vs M0: nonspecific", "M2 vs M1: specific", "M2 vs M0: specific and nonspecific")), col = rev(c("red", "green4", "blue", "black")), points = FALSE),
-        xlab = expression(paste(log[10], "p")),
-        par.settings = list(dot.symbol = list(col = c(as.character(H$col)[-length(H$col)], "black"))))
+my.dotplot <- function(dt = H, select = c("F1 vs F0", "M1 vs M0", "M2 vs M1", "M2 vs M0"), ...) {
+    sel <- dt$ANOVA %in% select
+    ssel <- levels(dt$ANOVA) %in% select
+    txt <- rev(c("F1 vs F0: specific", "M1 vs M0: nonspecific", "M2 vs M1: specific", "M2 vs M0: specific and nonspecific"))
+    dotplot(par ~ log10(pval), data = dt, subset = sel,
+            auto.key = list(text = ifelse(rev(ssel), txt, ""),
+                            col = rev(c("red", "green4", "blue", "black")), points = FALSE),
+            xlab = expression(paste(log[10], "p")),
+            scales = list(y = list(limits = c(0, nrow(dt) + 1), at = seq_len(nrow(dt)), labels = dt$par)),
+            xlim = c(-35, 0),
+            par.settings = list(dot.symbol = list(col = c(as.character(dt$col)[-length(dt$col)], "black"))),
+            ...)
+}
 ```
 
-<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/log-p-val-1.png" title="plot of chunk log-p-val" alt="plot of chunk log-p-val" width="700px" />
+
+```r
+my.dotplot()
+```
+
+<img src="{{ site.baseurl }}/R/2017-10-16-fixed-and-mixed-models/figure/unnamed-chunk-8-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" width="700px" />
+
+```r
+pdf(file = "figure/p-val-F1F0.pdf")
+my.dotplot(select = c("F1 vs F0"))
+dev.off()
+pdf(file = "figure/p-val-F1F0-M1M0.pdf")
+my.dotplot(select = c("F1 vs F0", "M1 vs M0"))
+dev.off()
+pdf(file = "figure/p-val-F1F0-M1M0-M2M1-M2M0.pdf")
+my.dotplot(select = c("F1 vs F0", "M1 vs M0", "M2 vs M1", "M2 vs M0"))
+dev.off()
+```
 
 ## Implications to our study
 
