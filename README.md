@@ -1,7 +1,16 @@
 # R you experienced?
 
-The idea of this little collection of toy analyses came about when I studied language-independent programming concepts.  As I was working my way through the classic textbook [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/sites/default/files/sicp/index.html) I was taken by the austere beauty of its theoretical subject itself.  At the same time I wondered how I could lift those general programming concepts into my everyday R programming practice in computational and statistical genomics.  I knew that once I managed to implement some general concept in R---and so learn a new R idiom---in the context of a specific problem from then on that R idiom would serve me well in other contexts.
+## What is this?
+
+* articles on theoretical programming concepts turned into R code
+* a static website containing those articles: [https://attilagk.github.io/R-you-experienced/](https://attilagk.github.io/R-you-experienced/)
+
+## Introduction
+
+The idea of this little collection of articles came about when I studied language-independent programming concepts.  As I was working my way through the classic textbook [Structure and Interpretation of Computer Programs](https://mitpress.mit.edu/sites/default/files/sicp/index.html) I was taken by the austere beauty of its theoretical subject itself.  At the same time I wondered how I could lift those general programming concepts into my everyday R programming practice in computational and statistical genomics.  I knew that once I managed to implement some general concept in R---and so learn a new R idiom---in the context of a specific problem from then on that R idiom would serve me well in other contexts.
 
 I began to search for the problem with the blueprint of a solution in my hand.  Where in my everyday work could I apply, say, a recursive procedure?  What facilities does the R language offer to implement it and what the pros and cons of alternative implementations?  And what are the pros and cons of iteration relative to recursion?  Whenever I found a pretext for applying a general technique (like recursive procedures) in my everyday work I swung into action (spending probably time and effort than my boss would have preferred) and finally achieved the lofty goal of connecting theory to practice.
 
-But introducing a new concept into work on real world problems turned out much of a compromise.  Besides, I wanted share my experience with others.  That called for putting the real problem aside (they are messy and complicated, and have their own practical significance) and working in the sandbox of some toy problem.  Only that allowed proper discussion of and comparison between general and R language specific programming concepts.
+But introducing a new concept into work on real world problems turned out too much of a compromise because real world problems are messy, complicated and already loaded with their own practical significance.  Besides, I wanted share my experience with others.  That called for putting real problems aside and working in the cute realm of toy problems.  Only that allowed proper discussion of and comparison between general and R language specific programming concepts.
+
+This principle lead directly to the present project (or blog, if you will).  After the first few programming-minded articles I expanded the scope to statistical modeling; a rather accidental decision but not arbitrary because the statistical-minded articles, too, balance between theory and practice.
