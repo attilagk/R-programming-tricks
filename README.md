@@ -28,7 +28,7 @@ bundle exec jekyll serve --config _config.local.yml
 
 The HTML style may not work in this case, but that's OK because running the site locally is only meant for rapid development and testing.
 
-Most files and directories are standard for Jekyll (see [this page](https://jekyllrb.com/docs/structure/) in Jekyll's docs).  There are two directories that contain the real content, though.
+Most files and directories are standard for Jekyll (see [this page](https://jekyllrb.com/docs/structure/) in Jekyll's docs).  There are two directories that contain the real content: the articles themselves.
 
 ```
 R-markdown/   # R markdown files (the articles) and associated R scripts
