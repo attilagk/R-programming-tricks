@@ -3,7 +3,7 @@
 ## What is this?
 
 * articles on theoretical programming concepts turned into R code
-* a static website containing those articles: [https://attilagk.github.io/R-you-experienced/](https://attilagk.github.io/R-you-experienced/)
+* source of a static website containing those articles: [https://attilagk.github.io/R-you-experienced/](https://attilagk.github.io/R-you-experienced/)
 
 ## Introduction
 
@@ -13,4 +13,24 @@ I began to search for the problem with the blueprint of a solution in my hand.  
 
 But introducing a new concept into work on real world problems turned out too much of a compromise because real world problems are messy, complicated and already loaded with their own practical significance.  Besides, I wanted share my experience with others.  That called for putting real problems aside and working in the cute realm of toy problems.  Only that allowed proper discussion of and comparison between general and R language specific programming concepts.
 
-This principle lead directly to the present project (or blog, if you will).  After the first few programming-minded articles I expanded the scope to statistical modeling; a rather accidental decision but not arbitrary because the statistical-minded articles, too, balance between theory and practice.
+This principle lead directly to the present project (or blog, if you will).  After the first few programming minded articles I expanded the scope to statistical modeling; a rather accidental decision but not arbitrary because the statistics oriented articles, too, balance between theory and practice.
+
+## About the repository
+
+The repository contains the source of a website to be built by [Jekyll](https://jekyllrb.com/).  This means that GitHub automatically builds it into a static website; see [https://attilagk.github.io/R-you-experienced/](https://attilagk.github.io/R-you-experienced/).
+
+If you would like to build and serve it locally then fork the repo and run Jekyll as follows.
+
+```
+git clone https://github.com/attilagk/R-you-experienced && cd R-you-experienced
+bundle exec jekyll serve --config _config.local.yml
+```
+
+The HTML style may not work in this case, but that's OK because running the site locally is only meant for rapid development and testing.
+
+Most files and directories are standard for Jekyll (see [this page](https://jekyllrb.com/docs/structure/) in Jekyll's docs).  There are two directories that contain the real content, though.
+
+```
+R-markdown/   # R markdown files (the articles) and associated R scripts
+R/            # images produced by "knitting" the R markdown files
+```
