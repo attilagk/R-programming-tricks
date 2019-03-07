@@ -1,5 +1,4 @@
-*.Rmd linguist-language=RMarkdown
-*.Rmd linguist-detactable=true
+*.Rmd linguist-detectable=true
 _site/* linguist-generated
 Gemfile* linguist-generated
 *.html linguist-documentation
