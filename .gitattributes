@@ -5,3 +5,4 @@
 *.css linguist-documentation
 *.scss linguist-documentation
 _site/* linguist-generated
+Gemfile* linguist-generated
