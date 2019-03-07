@@ -1,3 +1,7 @@
 *.R linguist-language=R
 *.Rmd linguist-language=RMarkdown
 *.Rmd linguist-documentation=false
+*.html linguist-documentation
+*.css linguist-documentation
+*.scss linguist-documentation
+_site/* linguist-generated
