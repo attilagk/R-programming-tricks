@@ -1,3 +1,6 @@
 *.Rmd linguist-detactable=true
 _site/* linguist-generated
 Gemfile* linguist-generated
+*.html linguist-documentation
+*.css linguist-documentation
+*.scss linguist-documentation
